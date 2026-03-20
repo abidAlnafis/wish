@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <!-- Childish, Bubbly Font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            /* Cute Pink Theme */
+            --text-main: #9d174d; 
+            --box-bg: #fffffffa; 
+            --btn-yes: #f472b6;
+            --btn-no: #f3f4f6;
+            --cake-outline: #831843; 
+            --bg-base: #fdf2f8;
+            --bg-reveal: #fce7f3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        body {
+            /* 
+               UNIVERSAL ALIGNMENT FIX 
+               Using min-height 100dvh and flex to ensure center even on mobile navbars 
+            */
+            background-color: var(--bg-base);
+            /* 
+               WHATSAPP BG FIX: 
+               Changed stroke to semi-transparent black (rgba(0,0,0,0.04)) 
+               This ensures the pattern stays visible regardless of the background color! 
+            */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill='none' stroke='rgba(0,0,0,0.04)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M25,25l10,10m-10,0l10,-10 M120,40a5,5 0 1,0 0,-10a5,5 0 0,0 0,10z M40,110s5,-15 20,0 M100,100l5,-15 5,15-5,-5z M60,60a10,10 0 1,0 0,-20a10,10 0 0,0 0,20 M70,130h20v10h-20z M15,85c5,-5 15,5 20,-5 M135,80a5,5 0 1,0 0,-10a5,5 0 0,0 0,10z M90,10l10,10-10,-5z M50,30c5,0 10,-5 15,0 M110,60l-10,5v5l10,-5 M80,80l-5,-5m10,0l-5,5'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-attachment: fixed;
+            
+            color: var(--text-main);
+            min-height: 100dvh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; 
+            position: relative;
+            transition: background-color 1.5s ease;
+        }
+
+        body.revealed {
+            background-color: var(--bg-reveal);
+        }
+
+        /* ----- CONTAINERS ----- */
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #front-page, #reveal-screen {
+            background: var(--box-bg);
+            border-radius: 40px; 
+            box-shadow: 0 15px 40px rgba(157, 23, 77, 0.12); 
+            border: 6px solid #fbcfe8;
+            text-align: center;
+            width: 100%;
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem);
+            gap: 2rem;
+            max-width: 100%;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        #front-page { display: flex; }
+        
+        #reveal-screen {
+            opacity: 0;
+            padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+            gap: 1.5rem;
+        }
+
+        #reveal-screen.show { opacity: 1; }
+        .hide-scale { opacity: 0 !important; transform: scale(0.5) !important; pointer-events: none; transition: all 0.5s ease; }
+
+        /* ----- TYPOGRAPHY FLUID SCALING ----- */
+        h1 {
+            font-size: clamp(2rem, 12vw, 3.8rem);
+            color: #db2777;
+            text-shadow: 3px 3px 0 white;
+            letter-spacing: 1px;
+            animation: bounce-title 2.5s infinite ease-in-out;
+            margin: 0;
+            line-height: 1.1;
+        }
+        @keyframes bounce-title { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-10px,0); } }
+
+        h2 { 
+            font-size: clamp(1.5rem, 8vw, 2.4rem); 
+            color: #be185d; 
+            line-height: 1.2; 
+            text-shadow: 2px 2px 0 white; 
+            margin: 0;
+        }
+
+        /* ----- BUTTONS ALIGNMENT ----- */
+        .btn-group { 
+            display: flex; 
+            gap: 1.25rem; 
+            justify-content: center; 
+            align-items: center; 
+            width: 100%; 
+            max-width: 400px;
+        }
+
+        button {
+            border: none;
+            padding: 1rem 1.5rem;
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            font-weight: 700;
+            border-radius: 100px; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.08); 
+            color: white;
+            flex: 1;
+            min-width: 120px;
+        }
+        button:active { transform: translate3d(0, 6px, 0); box-shadow: 0 0 0 transparent; }
+
+        #btn-yes { background: #f472b6; border: 3px solid white; }
+        #btn-yes:hover { background: #ec4899; transform: translateY(-2px) scale(1.05); }
+
+        #btn-no { background: var(--btn-no); color: #64748b; border: 3px solid white; }
+        #btn-no:hover { background: #e5e7eb; }
+
+        /* ----- OPTIMIZED CARTOONS ----- */
+        .cartoon {
+            position: absolute;
+            font-size: clamp(3rem, 10vw, 5rem); 
+            z-index: 1; 
+            will-change: transform; 
+            display: none;
+        }
+        body.revealed .cartoon { display: block; }
+
+        .cute-sun { top: 5%; right: 5%; animation: spin-sun 30s linear infinite; }
+        @keyframes spin-sun { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .dancing-animal { bottom: 20px; animation: dance-opt 0.8s alternate ease-in-out infinite; }
+        .dancing-animal.left { left: 5%; transform-origin: bottom right; }
+        .dancing-animal.right { right: 5%; transform-origin: bottom left; animation-delay: 0.4s; }
+        @keyframes dance-opt { 
+            0% { transform: translate3d(0,0,0) rotate(-5deg); } 
+            100% { transform: translate3d(0,-25px,0) rotate(10deg); } 
+        }
+
+        .decorations { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; display: none; z-index: 2; }
+        body.revealed .decorations { display: block; }
+
+        .floating-emoji {
+            position: absolute;
+            bottom: -100px;
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            animation: float-fluid 15s infinite linear;
+            will-change: transform;
+        }
+        .e1 { left: 8%; animation-duration: 12s; }
+        .e2 { left: 22%; animation-duration: 14s; animation-delay: 4s; }
+        .e3 { left: 40%; animation-duration: 11s; animation-delay: 1s; }
+        .e4 { left: 65%; animation-duration: 16s; animation-delay: 5s; }
+        .e5 { left: 82%; animation-duration: 13s; animation-delay: 2s; }
+
+        @keyframes float-fluid {
+            0% { transform: translate3d(0,0,0) rotate(0); }
+            100% { transform: translate3d(0, -125vh, 0) rotate(20deg); }
+        }
+
+        /* ----- THE CAKE FIX ----- */
+        .cake-container {
+            position: relative;
+            width: clamp(200px, 60vw, 260px);
+            aspect-ratio: 260/160;
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .cake {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            transition: transform 0.2s ease;
+        }
+
+        .layer {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 40px; 
+            border: 5px solid var(--cake-outline); 
+        }
+        .layer-bottom { width: 95%; height: 45%; bottom: 0; background: #fbcfe8; border-bottom-width: 10px; }
+        .layer-middle { width: 75%; height: 40%; bottom: 35%; background: #f472b6; }
+        .layer-top { width: 55%; height: 35%; bottom: 65%; background: #fff1f2; }
+
+        .kawaii-face {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30%; height: 30%;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .eye { width: clamp(8px, 2vw, 12px); height: clamp(8px, 2vw, 12px); background: var(--cake-outline); border-radius: 50%; position: relative; animation: blink 4s infinite; }
+        .eye::after { content: ''; position: absolute; top: 15%; right: 15%; width: 30%; height: 30%; background: white; border-radius: 50%; }
+        .mouth { width: 30%; height: 20%; border-bottom: 3px solid var(--cake-outline); border-radius: 0 0 10px 10px; margin-top: 20%; transition: all 0.3s; }
+        @keyframes blink { 0%, 96%, 98% { transform: scaleY(1); } 97%, 100% { transform: scaleY(0.1); } }
+
+        .candles {
+            position: absolute;
+            bottom: 95%; left: 50%;
+            transform: translateX(-50%);
+            width: 50%; height: 25%;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            z-index: 2;
+        }
+        .candle { width: 12%; height: 80%; background: repeating-linear-gradient(45deg, white, white 5px, #f472b6 5px, #f472b6 10px); border-radius: 4px; border: 2px solid var(--cake-outline); position: relative;}
+        .flame { position: absolute; top: -60%; left: 50%; transform: translateX(-50%); width: 120%; height: 100%; background: #fbbf24; border-radius: 50% 50% 20% 20%; box-shadow: 0 0 12px #f59e0b; animation: scale-flame 0.4s infinite alternate; border: 1.5px solid var(--cake-outline); transform-origin: bottom center; }
+        .flame.out { opacity: 0; transform: translateX(-50%) scale(0); }
+        @keyframes scale-flame { from { transform: translateX(-50%) scale(0.9); } to { transform: translateX(-50%) scale(1.1); } }
+
+        .birthday-message {
+            background: rgba(255,255,255,0.9);
+            padding: 1.25rem;
+            border-radius: 30px;
+            border: 4px dashed #f472b6;
+            font-size: clamp(0.9rem, 3.5vw, 1.25rem);
+            color: #9d174d;
+            font-weight: 600;
+            line-height: 1.4;
+            width: 100%;
+        }
+
+        /* ----- BALLOONS ----- */
+        .balloons { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; display: none; }
+        .balloon { position: absolute; bottom: -120px; width: 60px; height: 80px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; animation: float-up 12s infinite linear; opacity: 0.9; }
+        .balloon::before { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 12px solid inherit; }
+        .b1 { left: 10%; background: #fbcfe8; animation-delay: 0s; }
+        .b2 { left: 30%; background: #f472b6; animation-delay: 3s; }
+        .b3 { left: 55%; background: #ec4899; animation-delay: 6s; }
+        .b4 { left: 80%; background: #db2777; animation-delay: 1s; }
+        @keyframes float-up { from { transform: translate3d(0,0,0); } to { transform: translate3d(0, -120vh, 0); } }
+
+        /* ----- MOBILE BUNTING ----- */
+        .bunting { position: absolute; top: 0; left: 0; width: 100%; display: none; justify-content: space-evenly; pointer-events: none; z-index: 6; }
+        .flag { width: 0; height: 0; border-left: 5vw solid transparent; border-right: 5vw solid transparent; border-top: 50px solid #f472b6; transform-origin: top center; animation: swing 2s infinite ease-in-out alternate; }
+        @keyframes swing { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+
+        @media (max-width: 400px) {
+            .container { padding: 10px; }
+            #front-page, #reveal-screen { padding: 1.5rem 1rem; gap: 1.25rem; }
+            .btn-group { flex-direction: column; }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bunting" id="bunting">
+        <div class="flag"></div><div class="flag" style="border-top-color: #fbcfe8;"></div>
+        <div class="flag" style="border-top-color: #ec4899;"></div><div class="flag" style="border-top-color: #fbcfe8;"></div>
+        <div class="flag"></div>
+    </div>
+
+    <div class="balloons" id="balloons">
+        <div class="balloon b1" style="border-bottom-color: #fbcfe8;"></div>
+        <div class="balloon b2" style="border-bottom-color: #f472b6;"></div>
+        <div class="balloon b3" style="border-bottom-color: #ec4899;"></div>
+        <div class="balloon b4" style="border-bottom-color: #db2777;"></div>
+    </div>
+
+    <div class="cartoon cute-sun">🌞</div>
+    <div class="cartoon dancing-animal left">🐇</div>
+    <div class="cartoon dancing-animal right">🐈</div>
+
+    <div class="decorations" id="decorations">
+        <div class="floating-emoji e1">🌸</div><div class="floating-emoji e2">🍭</div>
+        <div class="floating-emoji e3">🩷</div><div class="floating-emoji e4">🧸</div>
+        <div class="floating-emoji e5">🎀</div>
+    </div>
+
+    <div class="container">
+        <!-- FRONT PAGE -->
+        <div id="front-page">
+            <h2 id="front-title">Is it your birthday today? 🎂</h2>
+            <div class="btn-group">
+                <button id="btn-yes">YES!</button>
+                <button id="btn-no">NO</button>
+            </div>
+        </div>
+
+        <!-- REVEAL SCREEN -->
+        <div id="reveal-screen">
+            <h1 id="reveal-title">Make a Wish!</h1>
+            <div class="cake-container">
+                <div class="cake" id="interactive-cake">
+                    <div class="layer layer-bottom"></div>
+                    <div class="layer layer-middle">
+                        <div class="kawaii-face">
+                            <div class="eye left"></div><div class="mouth"></div><div class="eye right"></div>
+                        </div>
+                    </div>
+                    <div class="layer layer-top"></div>
+                    <div class="candles" id="candles-container"></div>
+                </div>
+            </div>
+            <div class="birthday-message" id="message-container">
+                🎤 Blow gently into your mic (shhh) to blow out the candles!
+            </div>
+            <audio id="bg-music" loop preload="auto">
+                <source src="https://upload.wikimedia.org/wikipedia/commons/4/43/Happy_Birthday_to_You_%28instrumental%29.ogg" type="audio/ogg">
+            </audio>
+        </div>
+    </div>
+
+    <script>
+        const candlesContainer = document.getElementById('candles-container');
+        for (let i = 0; i < 5; i++) {
+            const candle = document.createElement('div');
+            candle.className = 'candle';
+            candle.innerHTML = `<div class="flame"></div>`;
+            candlesContainer.appendChild(candle);
+        }
+
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        const frontPage = document.getElementById('front-page');
+        const revealScreen = document.getElementById('reveal-screen');
+        const frontTitle = document.getElementById('front-title');
+        const btnGroup = document.querySelector('.btn-group');
+        
+        const balloons = document.getElementById('balloons');
+        const bunting = document.getElementById('bunting');
+        const decorations = document.getElementById('decorations');
+        const bgMusic = document.getElementById('bg-music');
+
+        btnNo.addEventListener('click', () => {
+            frontTitle.innerHTML = "Oh! Well... Have a very Happy Early (or Belated) Birthday anyway! 🎉";
+            btnGroup.style.display = "none";
+        });
+
+        btnYes.addEventListener('click', () => {
+            frontPage.classList.add('hide-scale');
+            setTimeout(() => {
+                frontPage.style.display = 'none';
+                document.body.classList.add('revealed');
+                balloons.style.display = 'block';
+                bunting.style.display = 'flex';
+                decorations.style.display = 'block';
+                
+                bgMusic.volume = 0.5;
+                bgMusic.play().catch(e => console.log("Audio play blocked", e));
+                
+                revealScreen.style.display = 'flex';
+                void revealScreen.offsetWidth; 
+                revealScreen.classList.add('show');
+                initMic();
+            }, 500); 
+        });
+
+        let audioContext, analyser, microphoneStream, microphoneSource, candlesBlown = false;
+
+        async function initMic() {
+            try {
+                microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphoneSource = audioContext.createMediaStreamSource(microphoneStream);
+                analyser.smoothingTimeConstant = 0.4; 
+                analyser.fftSize = 512;
+                microphoneSource.connect(analyser);
+                detectBlow();
+            } catch (err) {
+                document.getElementById('message-container').innerText = "Mic access blocked. Tap the cake to blow out those candles!";
+                document.getElementById('interactive-cake').addEventListener('click', blowOutCandles);
+            }
+        }
+
+        function detectBlow() {
+            if (candlesBlown) return;
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+            if ((sum / dataArray.length) > 35) blowOutCandles();
+            else requestAnimationFrame(detectBlow);
+        }
+
+        function blowOutCandles() {
+            if (candlesBlown) return;
+            candlesBlown = true;
+            document.querySelectorAll('.flame').forEach((flame, index) => { 
+                setTimeout(() => { flame.classList.add('out'); }, index * 80); 
+            });
+            
+            setTimeout(() => {
+                const title = document.getElementById('reveal-title');
+                title.innerText = "HAPPY BIRTHDAY!";
+                document.getElementById('message-container').innerHTML = "Wishing you a fun, magical, and super awesome year ahead!<br><br>🎂 Eat lots of cake! 🎁";
+                document.querySelector('.mouth').style.cssText = "border-radius: 0 0 20px 20px; height: 15px; border-bottom-width: 5px;";
+                
+                if (microphoneStream) microphoneStream.getTracks().forEach(track => track.stop());
+                fireConfetti();
+            }, 500);
+        }
+
+        function fireConfetti() {
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100, colors: ['#fbcfe8', '#f472b6', '#ec4899', '#ffffff'] };
+            const interval = setInterval(() => {
+                confetti({...defaults, particleCount: 40, origin: { x: Math.random(), y: Math.random() - 0.2 } });
+            }, 250);
+            setTimeout(() => clearInterval(interval), 4000);
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: defaults.colors });
+        }
+    </script>
+</body>
+</html>

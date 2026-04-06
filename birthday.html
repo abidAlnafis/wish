@@ -788,6 +788,14 @@
             letter-spacing: 0.5px;
             pointer-events: none;
         }
+
+        .bangla-title {
+            font-size: clamp(1.5rem, 8vw, 2.5rem) !important;
+        }
+
+        .bangla-message {
+            font-size: clamp(0.85rem, 3vw, 1.05rem) !important;
+        }
     </style>
 </head>
 
@@ -823,10 +831,10 @@
     <div class="container">
         <!-- FRONT PAGE -->
         <div id="front-page">
-            <h2 id="front-title">Is it your birthday today? 🎂</h2>
+            <h2 id="front-title">আজ কি তোমার জন্মদিন? 🎂</h2>
             <div class="btn-group">
-                <button id="btn-yes">YES!</button>
-                <button id="btn-no">NO</button>
+                <button id="btn-yes">হ্যাঁ!</button>
+                <button id="btn-no">না</button>
             </div>
         </div>
 
@@ -875,7 +883,7 @@
         const bunting = document.getElementById('bunting');
         const decorations = document.getElementById('decorations');
         btnNo.addEventListener('click', () => {
-            frontTitle.innerHTML = "Oh! Well... Wishing you a very Happy Birthday in advance! 🎉";
+            frontTitle.innerHTML = "ওহ! আচ্ছা... আগাম শুভ জন্মদিন! 🎉";
             btnGroup.style.display = "none";
         });
 
@@ -992,8 +1000,13 @@
 
             setTimeout(() => {
                 const title = document.getElementById('reveal-title');
-                title.innerText = "HAPPY BIRTHDAY!";
-                document.getElementById('message-container').innerHTML = "Wishing you a fun, magical, and super awesome year ahead!<br><br>🎂 Eat lots of cake! 🎁";
+                title.innerText = "শুভ জন্মদিন!";
+                title.classList.add('bangla-title');
+
+                const msg = document.getElementById('message-container');
+                msg.innerHTML = "তোমার জীবনের প্রতিটি স্বপ্ন পূরণ হোক, আর তুমি সবসময় হাসিখুশি ও সুস্থ থাকো।<br><br>🎂 ট্রিট দিতে ভুলে যেও না কিন্তু! 🎁";
+                msg.classList.add('bangla-message');
+
                 document.querySelector('.mouth').style.cssText = "border-radius: 0 0 20px 20px; height: 15px; border-bottom-width: 5px;";
 
                 if (microphoneStream) microphoneStream.getTracks().forEach(track => track.stop());

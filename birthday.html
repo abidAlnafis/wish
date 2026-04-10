@@ -887,38 +887,16 @@
             btnGroup.style.display = "none";
         });
 
-        let synthPlaying = false;
-        let globalAudioCtx = null;
-        function playFailsafeSynth() {
-            if (synthPlaying || !globalAudioCtx) return;
-            synthPlaying = true;
-            try {
-                const notes = [[261.6, 0.4], [261.6, 0.4], [293.7, 0.8], [261.6, 0.8], [349.2, 0.8], [329.6, 1.6], [261.6, 0.4], [261.6, 0.4], [293.7, 0.8], [261.6, 0.8], [392.0, 0.8], [349.2, 1.6], [261.6, 0.4], [261.6, 0.4], [523.3, 0.8], [440.0, 0.8], [349.2, 0.8], [329.6, 0.8], [293.7, 1.6], [466.2, 0.4], [466.2, 0.4], [440.0, 0.8], [349.2, 0.8], [392.0, 0.8], [349.2, 1.6]];
-                function playLoop() {
-                    let time = globalAudioCtx.currentTime + 0.1;
-                    notes.forEach(n => {
-                        let osc = globalAudioCtx.createOscillator(); let gain = globalAudioCtx.createGain();
-                        osc.type = 'triangle'; osc.frequency.value = n[0];
-                        osc.connect(gain); gain.connect(globalAudioCtx.destination);
-                        gain.gain.setValueAtTime(0, time);
-                        gain.gain.linearRampToValueAtTime(0.15, time + 0.05); // Smooth attack removes clicks
-                        gain.gain.exponentialRampToValueAtTime(0.001, time + n[1] - 0.05);
-                        osc.start(time); osc.stop(time + n[1]);
-                        time += n[1];
-                    });
-                    setTimeout(playLoop, (time - globalAudioCtx.currentTime + 1.5) * 1000);
-                }
-                playLoop();
-            } catch (e) { console.error(e); }
+        let bgMusic = null;
+        function playBgMusic() {
+            if (bgMusic) return;
+            bgMusic = new Audio('music/Bdaymusic.mp3');
+            bgMusic.loop = true;
+            bgMusic.volume = 0.5;
+            bgMusic.play().catch(e => console.error('Audio play failed:', e));
         }
 
         btnYes.addEventListener('click', () => {
-            // Browsers securely block audio unless activated synchronously via user click
-            try {
-                globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (globalAudioCtx.state === 'suspended') globalAudioCtx.resume();
-            } catch (e) { }
-
             frontPage.classList.add('hide-scale');
             setTimeout(() => {
                 frontPage.style.display = 'none';
@@ -1011,7 +989,7 @@
 
                 if (microphoneStream) microphoneStream.getTracks().forEach(track => track.stop());
                 fireConfetti();
-                playFailsafeSynth();
+                playBgMusic();
             }, 500);
         }
 

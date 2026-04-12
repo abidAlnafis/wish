@@ -7,16 +7,18 @@
     <title>Happy Birthday!</title>
     
     <!-- Social Media Meta Tags / Open Graph -->
+    <!-- ALERTS: For Messenger and Facebook, 'content' URLs MUST be absolute (starting with https://) -->
     <meta property="og:title" content="Special Surprise For You 💖">
     <meta property="og:description" content="Click to view your special surprise!">
-    <meta property="og:image" content="img/cake.png">
+    <meta property="og:url" content="https://YOUR-WEBSITE-URL.com/">
+    <meta property="og:image" content="https://YOUR-WEBSITE-URL.com/img/cake.png">
     <meta property="og:type" content="website">
     
     <!-- Twitter Card Meta Tags (Used by many link previewers as fallback) -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Special Surprise For You 💖">
     <meta name="twitter:description" content="Click to view your special surprise!">
-    <meta name="twitter:image" content="img/cake.png">
+    <meta name="twitter:image" content="https://YOUR-WEBSITE-URL.com/img/cake.png">
 
     <!-- Childish, Bubbly Font from Google Fonts -->
     <link
@@ -961,6 +963,20 @@
                 bgMusic.play();
                 musicPlaying = true;
                 musicToggle.textContent = '🔊';
+            }
+        });
+
+        // Pause music when browser is minimized, screen is locked, or tab is switched
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Only pause the music, but don't change `musicPlaying` state
+                // This way we remember if they wanted it playing for when they return!
+                bgMusic.pause();
+            } else {
+                // If they come back, and they didn't manually mute it before, play it again
+                if (musicPlaying) {
+                    bgMusic.play().catch(e => console.error('Audio play on resume failed:', e));
+                }
             }
         });
 

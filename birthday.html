@@ -965,6 +965,9 @@
         });
 
         btnYes.addEventListener('click', () => {
+            // Force browser to load the audio using this initial user interaction
+            bgMusic.load();
+            
             frontPage.classList.add('hide-scale');
             setTimeout(() => {
                 frontPage.style.display = 'none';

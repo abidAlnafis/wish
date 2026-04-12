@@ -5,6 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday!</title>
+    
+    <!-- Social Media Meta Tags / Open Graph -->
+    <meta property="og:title" content="Special Surprise For You 💖">
+    <meta property="og:description" content="Click to view your special surprise!">
+    <meta property="og:image" content="img/cake.png">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags (Used by many link previewers as fallback) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Special Surprise For You 💖">
+    <meta name="twitter:description" content="Click to view your special surprise!">
+    <meta name="twitter:image" content="img/cake.png">
+
     <!-- Childish, Bubbly Font from Google Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600&display=swap"
@@ -146,7 +159,7 @@
         }
 
         h2 {
-            font-size: clamp(1.5rem, 8vw, 2.4rem);
+            font-size: clamp(1.8rem, 8vw, 2rem);
             color: #be185d;
             line-height: 1.2;
             text-shadow: 2px 2px 0 white;
@@ -706,7 +719,7 @@
             }
 
             h2 {
-                font-size: clamp(1.3rem, 7vw, 1.8rem);
+                font-size: clamp(1.7rem, 9vw, 2.2rem);
                 line-height: 1.3;
             }
 
@@ -796,6 +809,40 @@
         .bangla-message {
             font-size: clamp(0.85rem, 3vw, 1.05rem) !important;
         }
+
+        /* ----- MUSIC TOGGLE BUTTON ----- */
+        .music-toggle {
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            min-height: 38px;
+            border-radius: 50%;
+            background: rgba(244, 114, 182, 0.85);
+            backdrop-filter: blur(8px);
+            border: 2px solid white;
+            box-shadow: 0 2px 10px rgba(219, 39, 119, 0.25);
+            cursor: pointer;
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            align-self: flex-end;
+            font-size: 0.95rem;
+            transition: transform 0.2s ease, background 0.2s ease;
+            padding: 0;
+            line-height: 1;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.1);
+            background: rgba(236, 72, 153, 0.9);
+        }
+
+        .music-toggle:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 
@@ -859,6 +906,7 @@
                 🎤 Blow gently into your mic (shhh) to blow out the candles!
             </div>
         </div>
+        <button class="music-toggle" id="music-toggle" aria-label="Toggle music">🔊</button>
     </div>
 
     <div class="footer">Developed with ❤️ By Nafis</div>
@@ -887,14 +935,34 @@
             btnGroup.style.display = "none";
         });
 
-        let bgMusic = null;
+        // Pre-create Audio object so the browser can start buffering immediately
+        let bgMusic = new Audio('music/Bdaymusic.mp3');
+        bgMusic.preload = 'auto';
+        bgMusic.loop = true;
+        bgMusic.volume = 0.5;
+
+        const musicToggle = document.getElementById('music-toggle');
+        let musicPlaying = false;
+
         function playBgMusic() {
-            if (bgMusic) return;
-            bgMusic = new Audio('music/Bdaymusic.mp3');
-            bgMusic.loop = true;
-            bgMusic.volume = 0.5;
-            bgMusic.play().catch(e => console.error('Audio play failed:', e));
+            bgMusic.play().then(() => {
+                musicPlaying = true;
+                musicToggle.style.display = 'flex';
+                musicToggle.textContent = '🔊';
+            }).catch(e => console.error('Audio play failed:', e));
         }
+
+        musicToggle.addEventListener('click', () => {
+            if (musicPlaying) {
+                bgMusic.pause();
+                musicPlaying = false;
+                musicToggle.textContent = '🔇';
+            } else {
+                bgMusic.play();
+                musicPlaying = true;
+                musicToggle.textContent = '🔊';
+            }
+        });
 
         btnYes.addEventListener('click', () => {
             frontPage.classList.add('hide-scale');
@@ -978,7 +1046,7 @@
 
             setTimeout(() => {
                 const title = document.getElementById('reveal-title');
-                title.innerText = "শুভ জন্মদিন!";
+                title.innerHTML = "শুভ জন্মদিন!<br>মোহনা";
                 title.classList.add('bangla-title');
 
                 const msg = document.getElementById('message-container');

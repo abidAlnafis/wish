@@ -1150,101 +1150,7 @@
                 bottom: 15px;
             }
         }
-        /* ══════════════════════════════════════
-       MIC PERMISSION OVERLAY
-    ══════════════════════════════════════ */
-        #mic-perm-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9000;
-            background: rgba(10, 18, 30, 0.82);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            align-items: center;
-            justify-content: center;
-        }
 
-        #mic-perm-overlay.show {
-            display: flex;
-        }
-
-        .mic-perm-box {
-            background: rgba(20, 30, 48, 0.95);
-            border: 1.5px solid rgba(245, 197, 66, 0.25);
-            border-radius: 26px;
-            padding: 2.2rem 2rem 1.8rem;
-            max-width: min(340px, 90vw);
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04) inset;
-            animation: fadeUp .4s cubic-bezier(.34,1.56,.64,1);
-        }
-
-        .mic-perm-icon {
-            font-size: 3rem;
-            margin-bottom: 0.6rem;
-            display: block;
-            filter: drop-shadow(0 0 14px rgba(245,197,66,0.4));
-        }
-
-        .mic-perm-title {
-            font-family: 'Caveat', cursive;
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: 0.4rem;
-        }
-
-        .mic-perm-desc {
-            font-size: 0.92rem;
-            color: rgba(240,230,211,0.75);
-            line-height: 1.55;
-            margin-bottom: 1.4rem;
-        }
-
-        .mic-perm-allow {
-            width: 100%;
-            padding: 0.95rem 1.2rem;
-            border: none;
-            border-radius: 100px;
-            background: linear-gradient(135deg, rgba(232,135,79,0.9), rgba(245,197,66,0.85));
-            color: #1a0d00;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1.05rem;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 6px 22px rgba(232,135,79,.35);
-            transition: all .25s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            -webkit-tap-highlight-color: transparent;
-            margin-bottom: 0.75rem;
-        }
-
-        .mic-perm-allow:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 28px rgba(245,197,66,.45);
-        }
-
-        .mic-perm-skip {
-            background: none;
-            border: none;
-            color: rgba(240,230,211,0.45);
-            font-family: 'Nunito', sans-serif;
-            font-size: 0.85rem;
-            cursor: pointer;
-            padding: 0.3rem;
-            -webkit-tap-highlight-color: transparent;
-            text-decoration: underline;
-            transition: color .2s;
-        }
-
-        .mic-perm-skip:hover {
-            color: rgba(240,230,211,0.75);
-        }
     </style>
 </head>
 
@@ -1311,32 +1217,7 @@
     </div>
     <!-- ========================================== -->
 
-    <!-- ── MIC PERMISSION OVERLAY ── -->
-    <div id="mic-perm-overlay">
-        <div class="mic-perm-box">
-            <span class="mic-perm-icon">🎤</span>
-            <div class="mic-perm-title" id="mic-perm-title">Microphone Access</div>
-            <p class="mic-perm-desc" id="mic-perm-desc">
-                To blow out the candles, this page needs your microphone.<br>
-                Just puff gently — it'll detect your breath! 🕯️
-            </p>
-            <!-- Shown only in WebView/in-app browsers -->
-            <div id="mic-open-browser-wrap" style="display:none;">
-                <button class="mic-perm-allow" id="mic-open-browser-btn" style="background:linear-gradient(135deg,#1a73e8,#4a90e2);color:#fff;" onclick="openInRealBrowser()">
-                    🌐 <span id="mic-browser-label">Open in Chrome</span>
-                </button>
-            </div>
-            <!-- Hidden in WebView -->
-            <div id="mic-normal-wrap">
-                <button class="mic-perm-allow" id="mic-allow-btn" onclick="startMicAfterPermission()">
-                    🎤 Allow Microphone
-                </button>
-                <button class="mic-perm-skip" onclick="skipMicPerm()">
-                    Skip — I'll tap the cake instead
-                </button>
-            </div>
-        </div>
-    </div>
+
 
     <div id="starfield"></div>
     <div class="moon-bg">
@@ -1831,39 +1712,18 @@
             }
         }
 
-        function showMicPerm() {
-            if (isInAppBrowser()) {
-                // WebView: show only the "Open in Chrome" button, hide allow/skip
-                const wrap = document.getElementById('mic-open-browser-wrap');
-                if (wrap) wrap.style.display = 'block';
-                const normalWrap = document.getElementById('mic-normal-wrap');
-                if (normalWrap) normalWrap.style.display = 'none';
-                const lbl = document.getElementById('mic-browser-label');
-                if (lbl) lbl.textContent = isIOS() ? 'Open in Safari / Chrome' : 'Open in Chrome';
-                const desc = document.getElementById('mic-perm-desc');
-                if (desc) desc.innerHTML = "Messenger's browser doesn't support microphone access.<br>Open this page in Chrome to blow out the candles! 🕯️";
-            }
-            document.getElementById('mic-perm-overlay').classList.add('show');
-        }
-
-        function hideMicPerm() {
-            document.getElementById('mic-perm-overlay').classList.remove('show');
-        }
-
         async function initMic() {
             // Always allow tapping as a fallback
             const cake = document.getElementById('cake-scene');
             cake.style.cursor = 'pointer';
             cake.onclick = blowNext;
 
-            // Show custom permission overlay
-            showMicPerm();
+            // Start directly since we auto-redirect out of WebView
+            startMic();
         }
 
-        async function startMicAfterPermission() {
-            hideMicPerm();
-
-            // If navigator.mediaDevices is outright missing (some WebViews), fail fast
+        async function startMic() {
+            // If navigator.mediaDevices is outright missing, fail fast
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 showOpenInBrowserHint();
                 return;
@@ -1904,10 +1764,7 @@
                 `<br><span style="font-size:0.78rem;opacity:0.5;margin-top:0.4rem;display:inline-block;">Or just tap the cake to blow!</span>`;
         }
 
-        function skipMicPerm() {
-            hideMicPerm();
-            blowHint.innerHTML = '🍂 Tap the cake to blow out candles!';
-        }
+
 
         function detectBlow() {
             if (allBlown) return;

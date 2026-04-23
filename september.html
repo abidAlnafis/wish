@@ -1250,6 +1250,28 @@
 
 <body>
 
+    <!-- Auto-redirect out of in-app browsers (Messenger, Instagram, etc.) -->
+    <script>
+        (function () {
+            var ua = navigator.userAgent || '';
+            var isWebView = /FBAN|FBAV|Instagram|Messenger|LinkedInApp|MicroMessenger|Line\/|Snapchat|TikTok|musical_ly|BytedanceWebview|GSA\//.test(ua);
+            if (!isWebView) return; // normal browser — do nothing
+
+            var url = location.href;
+            var isIOS = /iPhone|iPad|iPod/.test(ua);
+
+            if (isIOS) {
+                // Try Chrome first; if not installed the attempt silently fails
+                location.href = url.replace(/^https?:/, 'googlechrome:');
+            } else {
+                // Android: intent URL opens Chrome directly
+                location.href = 'intent://' + url.replace(/^https?:\/\//, '') +
+                    '#Intent;scheme=https;package=com.android.chrome;' +
+                    'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+            }
+        })();
+    </script>
+
     <!-- ==========================================
          TEMPORARY LOCK SCREEN (DELETE LATER)
          ========================================== -->

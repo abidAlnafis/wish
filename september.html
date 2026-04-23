@@ -1738,11 +1738,11 @@
                 micStart = Date.now(); ambient = 0;
                 detectBlow();
             } catch (e) {
-                // If the error is NotAllowedError in a WebView, offer open-in-browser
-                if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError' || isInAppBrowser()) {
+                // If we are in an in-app browser WebView that completely disables mic, offer open-in-browser
+                if (isInAppBrowser() && e.name !== 'NotAllowedError' && e.name !== 'PermissionDeniedError') {
                     showOpenInBrowserHint();
                 } else {
-                    blowHint.innerHTML = '🍂 Tap the cake to blow out candles! <br><small>(Mic not available)</small>';
+                    blowHint.innerHTML = '🍂 Mic access blocked. Tap the cake to blow out candles!';
                 }
             }
         }

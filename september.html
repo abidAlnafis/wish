@@ -1293,12 +1293,21 @@
     <div id="mic-perm-overlay">
         <div class="mic-perm-box">
             <span class="mic-perm-icon">🎤</span>
-            <div class="mic-perm-title">Microphone Access</div>
-            <p class="mic-perm-desc">
-                To blow out the candles, this page needs access to your microphone.<br>
+            <div class="mic-perm-title" id="mic-perm-title">Microphone Access</div>
+            <p class="mic-perm-desc" id="mic-perm-desc">
+                To blow out the candles, this page needs your microphone.<br>
                 Just puff gently — it'll detect your breath! 🕯️
             </p>
-            <button class="mic-perm-allow" onclick="startMicAfterPermission()">
+            <!-- Shown only in WebView/in-app browsers -->
+            <div id="mic-open-browser-wrap" style="display:none;margin-bottom:0.8rem;">
+                <button class="mic-perm-allow" id="mic-open-browser-btn" style="background:linear-gradient(135deg,#1a73e8,#4a90e2);color:#fff;" onclick="openInRealBrowser()">
+                    🌐 <span id="mic-browser-label">Open in Chrome</span>
+                </button>
+                <p style="font-size:0.78rem;color:rgba(240,230,211,0.45);margin:0.3rem 0 0.6rem;">
+                    Messenger's browser doesn't support microphone.
+                </p>
+            </div>
+            <button class="mic-perm-allow" id="mic-allow-btn" onclick="startMicAfterPermission()">
                 🎤 Allow Microphone
             </button>
             <button class="mic-perm-skip" onclick="skipMicPerm()">
@@ -1771,7 +1780,43 @@
         const micFill = document.getElementById('mic-fill');
         const blowHint = document.getElementById('blow-hint');
 
+        /* ── Detect in-app / WebView browser ── */
+        function isInAppBrowser() {
+            const ua = navigator.userAgent || '';
+            return /FBAN|FBAV|Instagram|Messenger|LinkedInApp|MicroMessenger|Line\/|Snapchat|TikTok|musical_ly|BytedanceWebview|GSA\/|YaBrowser|MiuiBrowser|SamsungBrowser/.test(ua);
+        }
+
+        function isIOS() {
+            return /iPhone|iPad|iPod/.test(navigator.userAgent);
+        }
+
+        function openInRealBrowser() {
+            const url = window.location.href;
+            if (isIOS()) {
+                // iOS: just copy link; Safari intent not easily triggerable
+                window.location.href = url.replace(/^https?:/, 'googlechrome:');
+                setTimeout(() => {
+                    // Fallback if Chrome not installed: prompt user
+                    document.getElementById('mic-perm-desc').innerHTML =
+                        '📋 Copy this link and paste it in Safari or Chrome:<br><small style="word-break:break-all;color:var(--gold)">' + url + '</small>';
+                }, 500);
+            } else {
+                // Android: use intent to open Chrome
+                const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
+                    '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' +
+                    encodeURIComponent(url) + ';end';
+                window.location.href = intentUrl;
+            }
+        }
+
         function showMicPerm() {
+            // If inside WebView/in-app browser, surface the "open in Chrome/Safari" button prominently
+            if (isInAppBrowser()) {
+                const wrap = document.getElementById('mic-open-browser-wrap');
+                if (wrap) wrap.style.display = 'block';
+                const lbl = document.getElementById('mic-browser-label');
+                if (lbl) lbl.textContent = isIOS() ? 'Open in Safari / Chrome' : 'Open in Chrome';
+            }
             document.getElementById('mic-perm-overlay').classList.add('show');
         }
 
@@ -1785,13 +1830,19 @@
             cake.style.cursor = 'pointer';
             cake.onclick = blowNext;
 
-            // Show custom permission overlay (needed for Messenger/WebView in-app browsers
-            // which suppress the native permission prompt)
+            // Show custom permission overlay
             showMicPerm();
         }
 
         async function startMicAfterPermission() {
             hideMicPerm();
+
+            // If navigator.mediaDevices is outright missing (some WebViews), fail fast
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showOpenInBrowserHint();
+                return;
+            }
+
             try {
                 micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1801,8 +1852,30 @@
                 micStart = Date.now(); ambient = 0;
                 detectBlow();
             } catch (e) {
-                blowHint.innerHTML = '🍂 Tap the cake to blow out candles! <br><small>(Mic access was not granted)</small>';
+                // If the error is NotAllowedError in a WebView, offer open-in-browser
+                if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError' || isInAppBrowser()) {
+                    showOpenInBrowserHint();
+                } else {
+                    blowHint.innerHTML = '🍂 Tap the cake to blow out candles! <br><small>(Mic not available)</small>';
+                }
             }
+        }
+
+        function showOpenInBrowserHint() {
+            const browserName = isIOS() ? 'Safari / Chrome' : 'Chrome';
+            const url = window.location.href;
+            let intentHref = '#';
+            if (!isIOS()) {
+                intentHref = 'intent://' + url.replace(/^https?:\/\//, '') +
+                    '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' +
+                    encodeURIComponent(url) + ';end';
+            } else {
+                intentHref = url.replace(/^https?:/, 'googlechrome:');
+            }
+            blowHint.innerHTML =
+                `<span style="color:rgba(240,230,211,0.7);font-style:normal;">⚠️ Mic blocked by Messenger. Open this page in ${browserName} for mic support:</span><br>` +
+                `<a href="${intentHref}" style="display:inline-block;margin-top:0.6rem;padding:0.55rem 1.2rem;background:linear-gradient(135deg,#1a73e8,#4a90e2);color:#fff;border-radius:50px;font-weight:700;font-size:0.9rem;text-decoration:none;-webkit-tap-highlight-color:transparent;">🌐 Open in ${browserName}</a>` +
+                `<br><span style="font-size:0.78rem;opacity:0.5;margin-top:0.4rem;display:inline-block;">Or just tap the cake to blow!</span>`;
         }
 
         function skipMicPerm() {

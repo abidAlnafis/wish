@@ -275,6 +275,7 @@
             filter: drop-shadow(0 8px 24px rgba(245, 197, 66, .28));
             animation: envFloat 4s ease-in-out infinite alternate;
             perspective: 800px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         @keyframes envFloat {
@@ -477,6 +478,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         /* Candle strip */
@@ -1147,6 +1150,101 @@
                 bottom: 15px;
             }
         }
+        /* ══════════════════════════════════════
+       MIC PERMISSION OVERLAY
+    ══════════════════════════════════════ */
+        #mic-perm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(10, 18, 30, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        #mic-perm-overlay.show {
+            display: flex;
+        }
+
+        .mic-perm-box {
+            background: rgba(20, 30, 48, 0.95);
+            border: 1.5px solid rgba(245, 197, 66, 0.25);
+            border-radius: 26px;
+            padding: 2.2rem 2rem 1.8rem;
+            max-width: min(340px, 90vw);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04) inset;
+            animation: fadeUp .4s cubic-bezier(.34,1.56,.64,1);
+        }
+
+        .mic-perm-icon {
+            font-size: 3rem;
+            margin-bottom: 0.6rem;
+            display: block;
+            filter: drop-shadow(0 0 14px rgba(245,197,66,0.4));
+        }
+
+        .mic-perm-title {
+            font-family: 'Caveat', cursive;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.4rem;
+        }
+
+        .mic-perm-desc {
+            font-size: 0.92rem;
+            color: rgba(240,230,211,0.75);
+            line-height: 1.55;
+            margin-bottom: 1.4rem;
+        }
+
+        .mic-perm-allow {
+            width: 100%;
+            padding: 0.95rem 1.2rem;
+            border: none;
+            border-radius: 100px;
+            background: linear-gradient(135deg, rgba(232,135,79,0.9), rgba(245,197,66,0.85));
+            color: #1a0d00;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 22px rgba(232,135,79,.35);
+            transition: all .25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            -webkit-tap-highlight-color: transparent;
+            margin-bottom: 0.75rem;
+        }
+
+        .mic-perm-allow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(245,197,66,.45);
+        }
+
+        .mic-perm-skip {
+            background: none;
+            border: none;
+            color: rgba(240,230,211,0.45);
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 0.3rem;
+            -webkit-tap-highlight-color: transparent;
+            text-decoration: underline;
+            transition: color .2s;
+        }
+
+        .mic-perm-skip:hover {
+            color: rgba(240,230,211,0.75);
+        }
     </style>
 </head>
 
@@ -1190,6 +1288,24 @@
         </div>
     </div>
     <!-- ========================================== -->
+
+    <!-- ── MIC PERMISSION OVERLAY ── -->
+    <div id="mic-perm-overlay">
+        <div class="mic-perm-box">
+            <span class="mic-perm-icon">🎤</span>
+            <div class="mic-perm-title">Microphone Access</div>
+            <p class="mic-perm-desc">
+                To blow out the candles, this page needs access to your microphone.<br>
+                Just puff gently — it'll detect your breath! 🕯️
+            </p>
+            <button class="mic-perm-allow" onclick="startMicAfterPermission()">
+                🎤 Allow Microphone
+            </button>
+            <button class="mic-perm-skip" onclick="skipMicPerm()">
+                Skip — I'll tap the cake instead
+            </button>
+        </div>
+    </div>
 
     <div id="starfield"></div>
     <div class="moon-bg">
@@ -1655,12 +1771,27 @@
         const micFill = document.getElementById('mic-fill');
         const blowHint = document.getElementById('blow-hint');
 
+        function showMicPerm() {
+            document.getElementById('mic-perm-overlay').classList.add('show');
+        }
+
+        function hideMicPerm() {
+            document.getElementById('mic-perm-overlay').classList.remove('show');
+        }
+
         async function initMic() {
             // Always allow tapping as a fallback
             const cake = document.getElementById('cake-scene');
             cake.style.cursor = 'pointer';
             cake.onclick = blowNext;
 
+            // Show custom permission overlay (needed for Messenger/WebView in-app browsers
+            // which suppress the native permission prompt)
+            showMicPerm();
+        }
+
+        async function startMicAfterPermission() {
+            hideMicPerm();
             try {
                 micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1672,6 +1803,11 @@
             } catch (e) {
                 blowHint.innerHTML = '🍂 Tap the cake to blow out candles! <br><small>(Mic access was not granted)</small>';
             }
+        }
+
+        function skipMicPerm() {
+            hideMicPerm();
+            blowHint.innerHTML = '🍂 Tap the cake to blow out candles!';
         }
 
         function detectBlow() {

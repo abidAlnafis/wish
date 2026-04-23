@@ -852,6 +852,45 @@
 
 <body>
 
+    <!-- ==========================================
+         TEMPORARY LOCK SCREEN (DELETE LATER)
+         ========================================== -->
+    <style id="temp-lock-style">
+        #temp-lock-screen, #temp-lock-screen * {
+            font-family: system-ui, -apple-system, sans-serif !important;
+            text-shadow: none !important;
+        }
+        #temp-passcode {
+            letter-spacing: 0.8rem !important;
+        }
+    </style>
+    <div id="temp-lock-screen" style="position: fixed; inset: 0; z-index: 99999; background: #f3f4f6; display: flex; align-items: center; justify-content: center;">
+        <div style="background: #ffffff; padding: 3rem 2.5rem; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.06); display: flex; flex-direction: column; align-items: center; max-width: 90%; width: 380px; transition: transform 0.3s ease;">
+            
+            <div style="background: #fef2f2; color: #ef4444; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1.5rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                Temporary Lock
+            </div>
+
+            <h2 style="font-size: 1.6rem; margin: 0 0 0.5rem 0; color: #111827; font-weight: 700;">Restricted Access</h2>
+            <p style="font-size: 0.95rem; color: #6b7280; margin: 0 0 2rem 0; text-align: center;">Please enter the passcode to continue.</p>
+
+            <input type="password" id="temp-passcode" inputmode="numeric" maxlength="4" placeholder="••••" 
+                   style="font-size: 2.5rem; text-align: center; padding: 0.8rem; border: 1.5px solid #e5e7eb; border-radius: 16px; width: 100%; box-sizing: border-box; outline: none; background: #f9fafb; color: #111827; transition: all 0.2s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);"
+                   onfocus="this.style.borderColor='#3b82f6'; this.style.backgroundColor='#ffffff'; this.style.boxShadow='0 0 0 4px rgba(59, 130, 246, 0.1)';"
+                   onblur="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='#f9fafb'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.02)';">
+            
+            <p id="temp-lock-error" style="color: #ef4444; font-size: 0.9rem; margin: 0.8rem 0 0 0; min-height: 1.2rem; opacity: 0; transition: opacity 0.3s; font-weight: 500;">Incorrect passcode</p>
+            
+            <button id="temp-unlock-btn" 
+                    style="margin-top: 1.2rem; padding: 1rem; width: 100%; font-size: 1.1rem; border: none; background: #111827; color: white; border-radius: 14px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.1)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                Unlock 
+            </button>
+        </div>
+    </div>
+    <!-- ========================================== -->
+
     <div class="bunting" id="bunting">
         <div class="flag"></div>
         <div class="flag" style="border-top-color: #fbcfe8;"></div>
@@ -916,6 +955,33 @@
     <div class="footer">Developed with ❤️ By Nafis</div>
 
     <script>
+        /* ==========================================
+           TEMPORARY LOCK JS (DELETE LATER)
+           ========================================== */
+        const tempUnlockBtn = document.getElementById('temp-unlock-btn');
+        const tempPassInput = document.getElementById('temp-passcode');
+        const tempLockError = document.getElementById('temp-lock-error');
+
+        function tempCheckPasscode() {
+            const now = new Date();
+            let h = now.getHours();
+            let m = now.getMinutes();
+            let h12 = h % 12 || 12;
+            let mStr = m < 10 ? '0' + m : m;
+            
+            let valids = [`${h12}${mStr}`, `${h}${mStr}`, (h12 < 10 ? `0${h12}${mStr}` : `${h12}${mStr}`), (h < 10 ? `0${h}${mStr}` : `${h}${mStr}`)];
+            if (valids.includes(tempPassInput.value.trim())) {
+                document.getElementById('temp-lock-screen').style.display = 'none';
+            } else {
+                tempLockError.style.opacity = '1';
+                tempPassInput.value = '';
+                setTimeout(() => tempLockError.style.opacity = '0', 2000);
+            }
+        }
+        tempUnlockBtn.addEventListener('click', tempCheckPasscode);
+        tempPassInput.addEventListener('keydown', e => { if (e.key === 'Enter') tempCheckPasscode(); });
+        /* ========================================== */
+
         const candlesContainer = document.getElementById('candles-container');
         for (let i = 0; i < 5; i++) {
             const candle = document.createElement('div');

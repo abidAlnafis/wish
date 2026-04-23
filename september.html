@@ -4,16 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Happy Birthday Afia ✨</title>
+    <title>Happy Birthday✨</title>
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Nunito:ital,wght@0,400..800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" as="style">
+    <link rel="preload"
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Nunito:ital,wght@0,400..800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap"
+        as="style">
     <!-- Standard Meta -->
     <meta name="description" content="A special birthday surprise is waiting for you! 🎁">
 
     <!-- Open Graph / Meta for Messenger, Instagram, Facebook -->
-    <meta property="og:title" content="🎉 Happy Birthday Afia! 🎂✨">
+    <meta property="og:title" content="Something arrived for you 🤔">
     <meta property="og:description"
         content="Click to open your special birthday surprise! A magical letter is waiting... 🎁">
     <meta property="og:url" content="https://abidalnafis.github.io/wish/september.html">
@@ -23,7 +25,7 @@
 
     <!-- Twitter / X Card Meta -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="🎉 Happy Birthday Afia! 🎂✨">
+    <meta name="twitter:title" content="Something arrived for you 🤔">
     <meta name="twitter:description"
         content="Click to open your special birthday surprise! A magical letter is waiting... 🎁">
     <meta name="twitter:image" content="https://abidalnafis.github.io/wish/img/september_cake.png">
@@ -33,7 +35,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Nunito:ital,wght@0,400..800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"
+        crossorigin="anonymous"></script>
 
     <style>
         /* ─── ROOT TOKENS ─── */
@@ -1090,43 +1093,50 @@
             .cta-btn {
                 padding: 0.65rem 1rem;
                 font-size: 0.9rem;
-                width: 75%;
+                width: 80%;
                 margin: 0 auto;
             }
 
             #main-card {
-                margin-top: 10vh;
-                /* Pushes the boxes below the branch */
+                margin-top: 5vh;
+                margin-bottom: 2vh;
             }
 
             #tree-branch {
-                width: 200px;
-                /* Shrinks the branch so it stays in the corner */
+                width: 180px;
                 top: -1%;
-                right: -8%;
+                right: -5%;
             }
 
             .glass {
-                padding: 1.1rem 1rem;
+                padding: 1.2rem 1rem;
                 border-radius: 20px;
             }
 
             .screen {
-                gap: .85rem;
+                gap: .75rem;
             }
 
             .candle-strip {
-                gap: 8px;
+                gap: 6px;
+            }
+
+            .wish-title {
+                margin-bottom: 2vh;
             }
         }
 
-        @media (max-height: 660px) {
-            .screen {
-                gap: .7rem;
+        @media (max-height: 700px) {
+            #main-card {
+                margin-top: 2vh;
             }
 
             .glass {
-                padding: .9rem 1rem;
+                padding: 0.8rem 1rem;
+            }
+
+            .screen {
+                gap: 0.5rem;
             }
 
             .side {
@@ -1134,13 +1144,52 @@
             }
 
             .footer {
-                display: none;
+                bottom: 15px;
             }
         }
     </style>
 </head>
 
 <body>
+
+    <!-- ==========================================
+         TEMPORARY LOCK SCREEN (DELETE LATER)
+         ========================================== -->
+    <style id="temp-lock-style">
+        #temp-lock-screen, #temp-lock-screen * {
+            font-family: system-ui, -apple-system, sans-serif !important;
+            text-shadow: none !important;
+        }
+        #temp-passcode {
+            letter-spacing: 0.8rem !important;
+        }
+    </style>
+    <div id="temp-lock-screen" style="position: fixed; inset: 0; z-index: 99999; background: #f3f4f6; display: flex; align-items: center; justify-content: center;">
+        <div style="background: #ffffff; padding: 3rem 2.5rem; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.06); display: flex; flex-direction: column; align-items: center; max-width: 90%; width: 380px; transition: transform 0.3s ease;">
+            
+            <div style="background: #fef2f2; color: #ef4444; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1.5rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                Temporary Lock
+            </div>
+
+            <h2 style="font-size: 1.6rem; margin: 0 0 0.5rem 0; color: #111827; font-weight: 700;">Restricted Access</h2>
+            <p style="font-size: 0.95rem; color: #6b7280; margin: 0 0 2rem 0; text-align: center;">Please enter the passcode to continue.</p>
+
+            <input type="password" id="temp-passcode" inputmode="numeric" maxlength="4" placeholder="••••" 
+                   style="font-size: 2.5rem; text-align: center; padding: 0.8rem; border: 1.5px solid #e5e7eb; border-radius: 16px; width: 100%; box-sizing: border-box; outline: none; background: #f9fafb; color: #111827; transition: all 0.2s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);"
+                   onfocus="this.style.borderColor='#3b82f6'; this.style.backgroundColor='#ffffff'; this.style.boxShadow='0 0 0 4px rgba(59, 130, 246, 0.1)';"
+                   onblur="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='#f9fafb'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.02)';">
+            
+            <p id="temp-lock-error" style="color: #ef4444; font-size: 0.9rem; margin: 0.8rem 0 0 0; min-height: 1.2rem; opacity: 0; transition: opacity 0.3s; font-weight: 500;">Incorrect passcode</p>
+            
+            <button id="temp-unlock-btn" 
+                    style="margin-top: 1.2rem; padding: 1rem; width: 100%; font-size: 1.1rem; border: none; background: #111827; color: white; border-radius: 14px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.1)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                Unlock 
+            </button>
+        </div>
+    </div>
+    <!-- ========================================== -->
 
     <div id="starfield"></div>
     <div class="moon-bg">
@@ -1257,7 +1306,7 @@
         <!-- ─── SCREEN 1: ENVELOPE ─── -->
         <div id="s-env" class="screen active">
             <div class="glass">
-                <p class="tagline">Psst… something arrived for you 🌙</p>
+                <p class="tagline">Psst… something arrived for you 🤔</p>
                 <h2 class="env-heading">A little birthday surprise<br>is waiting inside…</h2>
             </div>
 
@@ -1467,7 +1516,8 @@
 
             <div class="msg-bubble new-msg">
                 <p class="dear-text">Dear Afia,</p>
-                <p class="bn-text">May every dream of your life come true—<br>Stay as bright and colorful<br>as a beautiful sky. 🌟</p>
+                <p class="bn-text">May every dream of your life come true—<br>Stay as bright and colorful<br>as a
+                    beautiful sky. 🌟</p>
                 <p class="bn-text">Wherever you go, may joy and<br>love always be with you.<br><span
                         class="inline-leaf">🍂</span></p>
                 <p class="bn-text">And yes – don't forget the treat! 🎁</p>
@@ -1551,6 +1601,33 @@
             document.getElementById(id).classList.add('active');
         }
 
+        /* ==========================================
+           TEMPORARY LOCK JS (DELETE LATER)
+           ========================================== */
+        const tempUnlockBtn = document.getElementById('temp-unlock-btn');
+        const tempPassInput = document.getElementById('temp-passcode');
+        const tempLockError = document.getElementById('temp-lock-error');
+
+        function tempCheckPasscode() {
+            const now = new Date();
+            let h = now.getHours();
+            let m = now.getMinutes();
+            let h12 = h % 12 || 12;
+            let mStr = m < 10 ? '0' + m : m;
+            
+            let valids = [`${h12}${mStr}`, `${h}${mStr}`, (h12 < 10 ? `0${h12}${mStr}` : `${h12}${mStr}`), (h < 10 ? `0${h}${mStr}` : `${h}${mStr}`)];
+            if (valids.includes(tempPassInput.value.trim())) {
+                document.getElementById('temp-lock-screen').style.display = 'none';
+            } else {
+                tempLockError.style.opacity = '1';
+                tempPassInput.value = '';
+                setTimeout(() => tempLockError.style.opacity = '0', 2000);
+            }
+        }
+        tempUnlockBtn.addEventListener('click', tempCheckPasscode);
+        tempPassInput.addEventListener('keydown', e => { if (e.key === 'Enter') tempCheckPasscode(); });
+        /* ========================================== */
+
         /* ═══════════════════ ENVELOPE ═══════════════════ */
         const envWrap = document.getElementById('envelope');
         const openBtn = document.getElementById('open-btn');
@@ -1559,6 +1636,12 @@
             if (envWrap.classList.contains('opening')) return;
             envWrap.classList.add('opening');
             openBtn.disabled = true; openBtn.textContent = '✨ Opening…';
+
+            // Resume AudioContext on first interaction
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
             setTimeout(() => { show('s-wish'); initMic(); }, 1800);
         }
         openBtn.addEventListener('click', openEnvelope);
@@ -1573,6 +1656,11 @@
         const blowHint = document.getElementById('blow-hint');
 
         async function initMic() {
+            // Always allow tapping as a fallback
+            const cake = document.getElementById('cake-scene');
+            cake.style.cursor = 'pointer';
+            cake.onclick = blowNext;
+
             try {
                 micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1582,9 +1670,7 @@
                 micStart = Date.now(); ambient = 0;
                 detectBlow();
             } catch (e) {
-                blowHint.innerHTML = '🍂 Mic not available — tap the cake to blow out candles!';
-                document.getElementById('cake-scene').style.cursor = 'pointer';
-                document.getElementById('cake-scene').addEventListener('click', blowAll);
+                blowHint.innerHTML = '🍂 Tap the cake to blow out candles! <br><small>(Mic access was not granted)</small>';
             }
         }
 
@@ -1629,7 +1715,7 @@
             } else {
                 const left = NUM - blown;
                 blowHint.textContent = `💨 ${left} candle${left > 1 ? 's' : ''} left — keep going!`;
-                setTimeout(() => { locked = false; animId = requestAnimationFrame(detectBlow); }, 750);
+                setTimeout(() => { locked = false; animId = requestAnimationFrame(detectBlow); }, 400);
             }
         }
 
@@ -1671,7 +1757,7 @@
 
         /* ═══════════════════ MUSIC ═══════════════════ */
         const mus = new Audio('music/Bdaymusic.mp3');
-        mus.loop = true; mus.volume = .88;
+        mus.loop = true; mus.volume = 1.0;
         let mOn = false;
         const mfab = document.getElementById('mfab');
 

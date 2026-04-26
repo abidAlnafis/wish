@@ -1951,63 +1951,59 @@
             try {
                 isSharing = true;
 
-                // Try fetching the image directly (works on most servers)
-                try {
-                    const response = await fetch('img/Birthday.png');
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    const blob = await response.blob();
-                    const file = new File([blob], 'Birthday.png', { type: 'image/png' });
+                // Function to get blob via fetch or canvas fallback
+                const getBlob = async () => {
+                    try {
+                        const response = await fetch('img/Birthday.png');
+                        if (!response.ok) throw new Error('Fetch failed');
+                        return await response.blob();
+                    } catch (e) {
+                        return new Promise((resolve, reject) => {
+                            const img = new Image();
+                            img.src = 'img/Birthday.png';
+                            img.onload = function () {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = img.width; canvas.height = img.height;
+                                canvas.getContext('2d').drawImage(img, 0, 0);
+                                canvas.toBlob(blob => blob ? resolve(blob) : reject('Canvas blob failed'), 'image/png');
+                            };
+                            img.onerror = () => reject('Image load failed');
+                        });
+                    }
+                };
 
-                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                const blob = await getBlob();
+                const file = new File([blob], 'Birthday.png', { type: 'image/png' });
+
+                // 1. Try Mobile Share first
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
                         await navigator.share({
                             files: [file]
                         });
-                    } else {
-                        // PC Fallback/Download
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = 'Birthday.png';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        setTimeout(() => URL.revokeObjectURL(url), 100);
+                        return; // Stop here if native share was successful
+                    } catch (shareErr) {
+                        console.warn("Share sheet closed or failed", shareErr);
                     }
-                } catch (fetchErr) {
-                    // Fallback to canvas method if fetch fails (e.g. local file protocol)
-                    const img = new Image();
-                    img.src = 'img/Birthday.png';
-                    img.onload = function () {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        canvas.toBlob(async function (blob) {
-                            if (!blob) return;
-                            const file = new File([blob], "Birthday.png", { type: "image/png" });
-                            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                                await navigator.share({
-                                    files: [file]
-                                });
-                            } else {
-                                const url = URL.createObjectURL(blob);
-                                const link = document.createElement('a');
-                                link.href = url;
-                                link.download = 'Birthday.png';
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                                setTimeout(() => URL.revokeObjectURL(url), 100);
-                            }
-                        }, 'image/png');
-                    };
-                    img.onerror = function () {
-                        alert('Could not find img/Birthday.png.');
-                    };
                 }
+
+                // 2. PC / Fallback: Force Download via Blob
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'Birthday.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+
             } catch (err) {
                 console.error('Sharing failed:', err);
+                // Last ditch effort: direct link
+                const link = document.createElement('a');
+                link.href = 'img/Birthday.png';
+                link.download = 'Birthday.png';
+                link.click();
             } finally {
                 setTimeout(() => {
                     isSharing = false;

@@ -79,6 +79,7 @@
             color: var(--text);
             transition: background 2s ease;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* ─── STARFIELD ─── */
@@ -276,6 +277,7 @@
             animation: envFloat 4s ease-in-out infinite alternate;
             perspective: 800px;
             -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         @keyframes envFloat {
@@ -407,6 +409,8 @@
             justify-content: center;
             align-items: center;
             gap: 8px;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .cta-btn::after {
@@ -1044,6 +1048,8 @@
             align-items: center;
             justify-content: center;
             transition: background .2s, transform .2s;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .music-fab.on {
@@ -1158,6 +1164,8 @@
             justify-content: center;
             transition: background .2s, transform .2s;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body.revealed .share-fab {
@@ -1205,8 +1213,10 @@
             filter: none !important;
         }
 
-        .taking-screenshot .leaf-icon path {
-            fill: #e8874f !important;
+
+        button {
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
     </style>
 </head>
@@ -1935,11 +1945,11 @@
         /* ═══════════════════ CAPTURE & SHARE ═══════════════════ */
         const shareBtn = document.getElementById('share-btn');
 
+        let isSharing = false;
         async function captureAndShare() {
+            if (isSharing) return;
             try {
-                shareBtn.disabled = true;
-                const originalContent = shareBtn.innerHTML;
-                shareBtn.innerHTML = '⚡...';
+                isSharing = true;
 
                 // Try fetching the image directly (works on most servers)
                 try {
@@ -1950,16 +1960,18 @@
 
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                         await navigator.share({
-                            files: [file],
-                            title: 'Birthday Surprise 🍂',
-                            text: 'A special surprise for Dr. Afia! ✨'
+                            files: [file]
                         });
                     } else {
                         // PC Fallback/Download
+                        const url = URL.createObjectURL(blob);
                         const link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
+                        link.href = url;
                         link.download = 'Birthday.png';
+                        document.body.appendChild(link);
                         link.click();
+                        document.body.removeChild(link);
+                        setTimeout(() => URL.revokeObjectURL(url), 100);
                     }
                 } catch (fetchErr) {
                     // Fallback to canvas method if fetch fails (e.g. local file protocol)
@@ -1976,15 +1988,17 @@
                             const file = new File([blob], "Birthday.png", { type: "image/png" });
                             if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                                 await navigator.share({
-                                    files: [file],
-                                    title: 'Birthday Surprise 🍂',
-                                    text: 'A special surprise for Dr. Afia! ✨'
+                                    files: [file]
                                 });
                             } else {
+                                const url = URL.createObjectURL(blob);
                                 const link = document.createElement('a');
-                                link.href = URL.createObjectURL(blob);
+                                link.href = url;
                                 link.download = 'Birthday.png';
+                                document.body.appendChild(link);
                                 link.click();
+                                document.body.removeChild(link);
+                                setTimeout(() => URL.revokeObjectURL(url), 100);
                             }
                         }, 'image/png');
                     };
@@ -1996,13 +2010,19 @@
                 console.error('Sharing failed:', err);
             } finally {
                 setTimeout(() => {
-                    shareBtn.innerHTML = originalContent;
-                    shareBtn.disabled = false;
+                    isSharing = false;
                 }, 1000);
             }
         }
 
         shareBtn.addEventListener('click', captureAndShare);
+
+        /* ═══════════════════ SECURITY ═══════════════════ */
+        document.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            alert("🍂 This is a special surprise — no peeking! 😒");
+        });
     </script>
 </body>
+
 </html>

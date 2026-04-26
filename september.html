@@ -1951,63 +1951,76 @@
             try {
                 isSharing = true;
 
-                // Function to get blob via fetch or canvas fallback
-                const getBlob = async () => {
-                    try {
-                        const response = await fetch('img/Birthday.png');
-                        if (!response.ok) throw new Error('Fetch failed');
-                        return await response.blob();
-                    } catch (e) {
-                        return new Promise((resolve, reject) => {
-                            const img = new Image();
-                            img.src = 'img/Birthday.png';
-                            img.onload = function () {
-                                const canvas = document.createElement('canvas');
-                                canvas.width = img.width; canvas.height = img.height;
-                                canvas.getContext('2d').drawImage(img, 0, 0);
-                                canvas.toBlob(blob => blob ? resolve(blob) : reject('Canvas blob failed'), 'image/png');
-                            };
-                            img.onerror = () => reject('Image load failed');
-                        });
-                    }
+                // Function to get image data as Data URL
+                const getImageData = async () => {
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.crossOrigin = "anonymous";
+                        img.src = 'img/Birthday.png?v=' + Date.now();
+                        img.onload = function () {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.width; canvas.height = img.height;
+                            canvas.getContext('2d').drawImage(img, 0, 0);
+                            resolve(canvas.toDataURL('image/png'));
+                        };
+                        img.onerror = () => reject('Image load failed at ' + img.src);
+                    });
                 };
 
-                const blob = await getBlob();
-                const file = new File([blob], 'Birthday.png', { type: 'image/png' });
+                const dataUrl = await getImageData();
 
-                // 1. Try Mobile Share first
-                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                // 1. Mobile Share (Priority path)
+                if (navigator.share && navigator.canShare) {
                     try {
-                        await navigator.share({
-                            files: [file]
-                        });
-                        return; // Stop here if native share was successful
+                        const res = await fetch(dataUrl);
+                        const blob = await res.blob();
+                        const file = new File([blob], 'Birthday.png', { type: 'image/png' });
+                        if (navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                files: [file]
+                            });
+                            return; // Stop here if native share was successful
+                        }
                     } catch (shareErr) {
-                        console.warn("Share sheet closed or failed", shareErr);
+                        console.warn("Native share failed", shareErr);
                     }
                 }
 
-                // 2. PC / Fallback: Force Download via Blob
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'Birthday.png';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                setTimeout(() => URL.revokeObjectURL(url), 100);
+                // 2. PC / Final Fallback: Multi-stage Forced Download
+                try {
+                    const downloadUrl = dataUrl.replace(/^data:image\/[^;]+/, 'data:application/octet-stream');
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = 'Birthday.png';
+                    document.body.appendChild(link);
+                    
+                    // Attempt programmatic click via MouseEvents
+                    if (document.createEvent) {
+                        const e = document.createEvent('MouseEvents');
+                        e.initEvent('click', true, true);
+                        link.dispatchEvent(e);
+                    } else {
+                        link.click();
+                    }
+
+                    // Fallback to direct navigation if it seems nothing happened after a short delay
+                    setTimeout(() => {
+                        if (document.body.contains(link)) {
+                            window.location.assign(downloadUrl);
+                            document.body.removeChild(link);
+                        }
+                    }, 600);
+                } catch (pcErr) {
+                    window.location.href = dataUrl;
+                }
 
             } catch (err) {
                 console.error('Sharing failed:', err);
-                // Last ditch effort: direct link
-                const link = document.createElement('a');
-                link.href = 'img/Birthday.png';
-                link.download = 'Birthday.png';
-                link.click();
+                alert('Download failed. Error: ' + err + '\n\nPlease try saving the image manually.');
             } finally {
                 setTimeout(() => {
                     isSharing = false;
-                }, 1000);
+                }, 2000);
             }
         }
 

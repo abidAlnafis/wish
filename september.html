@@ -964,11 +964,6 @@
             font-size: clamp(2.2rem, 6vw, 3.6rem);
         }
 
-        .side.bear {
-            bottom: 2%;
-            left: 2%;
-            animation: sway 2.6s ease-in-out infinite alternate;
-        }
 
         .side.fox {
             bottom: 2%;
@@ -991,15 +986,6 @@
             font-size: clamp(1.2rem, 4vw, 2.2rem);
         }
 
-        @keyframes sway {
-            from {
-                transform: rotate(-8deg) translateY(0)
-            }
-
-            to {
-                transform: rotate(5deg) translateY(-12px)
-            }
-        }
 
         @keyframes sway2 {
             from {
@@ -1189,11 +1175,10 @@
             fill: currentColor;
         }
 
-        /* Hide during capture */
+        /* Hide during capture (if any) */
         .taking-screenshot .share-fab,
         .taking-screenshot .music-fab,
-        .taking-screenshot .replay-btn,
-        .taking-screenshot #temp-lock-screen {
+        .taking-screenshot .replay-btn {
             display: none !important;
         }
 
@@ -1406,8 +1391,6 @@
         <use href="#bl-red" x="420" y="40" transform="rotate(65 420 40) scale(1)" />
     </svg>
 
-    <!-- Post-reveal side characters -->
-    <div class="side bear">🐻</div>
 
     <!-- ── MAIN CARD ── -->
     <div id="main-card">
@@ -1654,7 +1637,6 @@
     <button class="music-fab" id="mfab" aria-label="Toggle music">🎵</button>
     <div class="footer">Developed with ❤️ By Nafis</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
     <script>
         /* ═══════════════════ STARS ═══════════════════ */
         (function () {
@@ -1782,25 +1764,6 @@
 
         function isIOS() {
             return /iPhone|iPad|iPod/.test(navigator.userAgent);
-        }
-
-        function openInRealBrowser() {
-            const url = window.location.href;
-            if (isIOS()) {
-                // iOS: just copy link; Safari intent not easily triggerable
-                window.location.href = url.replace(/^https?:/, 'googlechrome:');
-                setTimeout(() => {
-                    // Fallback if Chrome not installed: prompt user
-                    document.getElementById('mic-perm-desc').innerHTML =
-                        '📋 Copy this link and paste it in Safari or Chrome:<br><small style="word-break:break-all;color:var(--gold)">' + url + '</small>';
-                }, 500);
-            } else {
-                // Android: use intent to open Chrome
-                const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
-                    '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' +
-                    encodeURIComponent(url) + ';end';
-                window.location.href = intentUrl;
-            }
         }
 
         async function initMic() {
@@ -1973,76 +1936,73 @@
         const shareBtn = document.getElementById('share-btn');
 
         async function captureAndShare() {
-            // alert('v5'); // Debug version
-            if (typeof html2canvas === 'undefined') {
-                alert('Screenshot library not loaded. Please wait 2 seconds and try again.');
-                return;
-            }
-
             try {
                 shareBtn.disabled = true;
                 const originalContent = shareBtn.innerHTML;
-                shareBtn.innerHTML = '📸';
+                shareBtn.innerHTML = '⚡...';
 
-                document.body.classList.add('taking-screenshot');
-                await new Promise(r => setTimeout(r, 700));
-
-                const canvas = await html2canvas(document.body, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#0c1520',
-                    logging: false,
-                    scrollY: -window.scrollY
-                });
-
-                document.body.classList.remove('taking-screenshot');
-
-                if (!canvas) throw new Error('Canvas creation failed');
-
-                const dataUrl = canvas.toDataURL('image/png');
-
-                canvas.toBlob(async (blob) => {
-                    if (!blob) throw new Error('Blob creation failed');
-                    const file = new File([blob], "Birthday_Wish.png", { type: "image/png" });
+                // Try fetching the image directly (works on most servers)
+                try {
+                    const response = await fetch('img/Birthday.png');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const blob = await response.blob();
+                    const file = new File([blob], 'Birthday.png', { type: 'image/png' });
 
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: 'My Birthday Wish 🍂',
-                                text: 'Check out this special birthday surprise! ✨'
-                            });
-                        } catch (err) {
-                            if (err.name !== 'AbortError') downloadImage(dataUrl);
-                        }
+                        await navigator.share({
+                            files: [file],
+                            title: 'Birthday Surprise 🍂',
+                            text: 'A special surprise for Dr. Afia! ✨'
+                        });
                     } else {
-                        downloadImage(dataUrl);
+                        // PC Fallback/Download
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = 'Birthday.png';
+                        link.click();
                     }
-
-                    shareBtn.innerHTML = originalContent;
-                    shareBtn.disabled = false;
-                }, 'image/png');
-
+                } catch (fetchErr) {
+                    // Fallback to canvas method if fetch fails (e.g. local file protocol)
+                    const img = new Image();
+                    img.src = 'img/Birthday.png';
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        canvas.toBlob(async function (blob) {
+                            if (!blob) return;
+                            const file = new File([blob], "Birthday.png", { type: "image/png" });
+                            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                                await navigator.share({
+                                    files: [file],
+                                    title: 'Birthday Surprise 🍂',
+                                    text: 'A special surprise for Dr. Afia! ✨'
+                                });
+                            } else {
+                                const link = document.createElement('a');
+                                link.href = URL.createObjectURL(blob);
+                                link.download = 'Birthday.png';
+                                link.click();
+                            }
+                        }, 'image/png');
+                    };
+                    img.onerror = function () {
+                        alert('Could not find img/Birthday.png.');
+                    };
+                }
             } catch (err) {
-                document.body.classList.remove('taking-screenshot');
-                alert('Error: ' + err.message);
-                shareBtn.innerHTML = '❌';
+                console.error('Sharing failed:', err);
+            } finally {
                 setTimeout(() => {
                     shareBtn.innerHTML = originalContent;
                     shareBtn.disabled = false;
-                }, 2000);
+                }, 1000);
             }
-        }
-
-        function downloadImage(dataUrl) {
-            const link = document.createElement('a');
-            link.download = 'Birthday_Wish.png';
-            link.href = dataUrl;
-            link.click();
         }
 
         shareBtn.addEventListener('click', captureAndShare);
     </script>
 </body>
-
 </html>

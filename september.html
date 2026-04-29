@@ -1077,6 +1077,16 @@
             letter-spacing: .3px;
         }
 
+        @media (max-width: 600px) {
+            .share-fab,
+            .music-fab {
+                bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+            }
+            .footer {
+                bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+            }
+        }
+
         /* ══════════════════════════════════════
        RESPONSIVE OVERRIDES
     ══════════════════════════════════════ */
@@ -1948,79 +1958,66 @@
         let isSharing = false;
         async function captureAndShare() {
             if (isSharing) return;
+            isSharing = true;
             try {
-                isSharing = true;
-
-                // Function to get image data as Data URL
-                const getImageData = async () => {
-                    return new Promise((resolve, reject) => {
+                // Fetch the image directly as a Blob — avoids canvas CORS taint issues entirely
+                const imgUrl = 'img/Birthday.png';
+                let blob;
+                try {
+                    const res = await fetch(imgUrl, { cache: 'force-cache' });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    blob = await res.blob();
+                } catch (fetchErr) {
+                    // fetch failed (e.g. file:// protocol) — fall back to canvas
+                    blob = await new Promise((resolve, reject) => {
                         const img = new Image();
-                        img.crossOrigin = "anonymous";
-                        img.src = 'img/Birthday.png?v=' + Date.now();
+                        img.crossOrigin = 'anonymous';
+                        img.src = imgUrl + '?v=' + Date.now();
                         img.onload = function () {
                             const canvas = document.createElement('canvas');
-                            canvas.width = img.width; canvas.height = img.height;
+                            canvas.width = img.width;
+                            canvas.height = img.height;
                             canvas.getContext('2d').drawImage(img, 0, 0);
-                            resolve(canvas.toDataURL('image/png'));
+                            canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png');
                         };
-                        img.onerror = () => reject('Image load failed at ' + img.src);
+                        img.onerror = () => reject(new Error('Image failed to load'));
                     });
-                };
+                }
 
-                const dataUrl = await getImageData();
-
-                // 1. Mobile Share (Priority path)
-                if (navigator.share && navigator.canShare) {
+                // ── Mobile: native Web Share API (files) ──
+                const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                if (isMobile && navigator.share) {
                     try {
-                        const res = await fetch(dataUrl);
-                        const blob = await res.blob();
                         const file = new File([blob], 'Birthday.png', { type: 'image/png' });
-                        if (navigator.canShare({ files: [file] })) {
-                            await navigator.share({
-                                files: [file]
-                            });
-                            return; // Stop here if native share was successful
+                        const canShareFile = navigator.canShare && navigator.canShare({ files: [file] });
+                        if (canShareFile) {
+                            await navigator.share({ files: [file] });
+                            return; // ✅ Done — do NOT run download code
                         }
                     } catch (shareErr) {
-                        console.warn("Native share failed", shareErr);
-                    }
-                }
-
-                // 2. PC / Final Fallback: Multi-stage Forced Download
-                try {
-                    const downloadUrl = dataUrl.replace(/^data:image\/[^;]+/, 'data:application/octet-stream');
-                    const link = document.createElement('a');
-                    link.href = downloadUrl;
-                    link.download = 'Birthday.png';
-                    document.body.appendChild(link);
-                    
-                    // Attempt programmatic click via MouseEvents
-                    if (document.createEvent) {
-                        const e = document.createEvent('MouseEvents');
-                        e.initEvent('click', true, true);
-                        link.dispatchEvent(e);
-                    } else {
-                        link.click();
-                    }
-
-                    // Fallback to direct navigation if it seems nothing happened after a short delay
-                    setTimeout(() => {
-                        if (document.body.contains(link)) {
-                            window.location.assign(downloadUrl);
-                            document.body.removeChild(link);
+                        // User cancelled or share failed — don't fall through to download on mobile
+                        if (shareErr.name !== 'AbortError') {
+                            console.warn('Native share failed:', shareErr);
                         }
-                    }, 600);
-                } catch (pcErr) {
-                    window.location.href = dataUrl;
+                        return;
+                    }
                 }
+
+                // ── Desktop/PC: clean anchor download via object URL ──
+                const objectUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = objectUrl;
+                link.download = 'Birthday.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 5000);
 
             } catch (err) {
-                console.error('Sharing failed:', err);
-                alert('Download failed. Error: ' + err + '\n\nPlease try saving the image manually.');
+                console.error('Sharing/download failed:', err);
+                alert('Could not share/download the image. Please try saving it manually.');
             } finally {
-                setTimeout(() => {
-                    isSharing = false;
-                }, 2000);
+                setTimeout(() => { isSharing = false; }, 2000);
             }
         }
 

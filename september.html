@@ -1077,15 +1077,7 @@
             letter-spacing: .3px;
         }
 
-        @media (max-width: 600px) {
-            .share-fab,
-            .music-fab {
-                bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-            }
-            .footer {
-                bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-            }
-        }
+
 
         /* ══════════════════════════════════════
        RESPONSIVE OVERRIDES
@@ -1180,6 +1172,17 @@
 
         body.revealed .share-fab {
             display: flex;
+        }
+
+        /* ── Mobile: push FABs & footer above browser nav bar ── */
+        @media (max-width: 768px) {
+            .share-fab,
+            .music-fab {
+                bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+            }
+            .footer {
+                bottom: calc(34px + env(safe-area-inset-bottom, 0px));
+            }
         }
 
         .share-fab:hover {

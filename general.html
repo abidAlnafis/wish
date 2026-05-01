@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Make a Wish 🎂</title>
+<meta name="description" content="Make a special afternoon wish! 🌼">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" crossorigin="anonymous"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: linear-gradient(180deg, #62b8e3 0%, #9ddbf5 100%);
+  font-family: 'Quicksand', sans-serif;
+  color: #4a3b32;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── BACKGROUND ── */
+.sun {
+  position: fixed;
+  top: 15%;
+  right: 15%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, #fff176 0%, #ffeb3b 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 40px #ffeb3b;
+  z-index: 0;
+  animation: pulseSun 4s infinite alternate;
+}
+@keyframes pulseSun {
+  from { transform: scale(1); box-shadow: 0 0 40px #ffeb3b; }
+  to { transform: scale(1.05); box-shadow: 0 0 70px #ffd54f; }
+}
+.cloud {
+  position: fixed;
+  background: #fff;
+  border-radius: 50px;
+  opacity: 0.85;
+  z-index: 0;
+  animation: floatCloud var(--speed, 30s) linear infinite;
+}
+.cloud::before, .cloud::after {
+  content: '';
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+}
+@keyframes floatCloud {
+  from { transform: translateX(-250px); }
+  to { transform: translateX(120vw); }
+}
+
+.scenery {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: clamp(150px, 25vh, 250px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── UI ── */
+#app {
+  position: relative;
+  z-index: 10;
+  width: min(400px, 92vw);
+}
+.screen {
+  display: none;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.screen.active {
+  display: block;
+}
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 4px solid #fff;
+  border-radius: 30px;
+  padding: clamp(1.8rem, 5vw, 2.5rem);
+  box-shadow: 0 15px 35px rgba(122, 184, 60, 0.2);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.emoji-icon {
+  font-size: 4rem;
+  margin-bottom: 10px;
+  animation: bounce 2s infinite alternate;
+}
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}
+.title {
+  font-family: 'Fredoka', sans-serif;
+  color: #4a3b32;
+  margin-bottom: 10px;
+  font-size: clamp(1.8rem, 7vw, 2.2rem);
+}
+.subtitle {
+  color: #7b6a5e;
+  font-weight: 600;
+  margin-bottom: 25px;
+  line-height: 1.5;
+  font-size: clamp(0.95rem, 4vw, 1.1rem);
+}
+
+.cta {
+  background: #f24b4b;
+  color: white;
+  border-radius: 50px;
+  padding: 14px 28px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.2rem;
+  border: 3px solid #4a3b32;
+  box-shadow: 0 6px 0 #4a3b32;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+.cta:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 #4a3b32;
+}
+
+
+
+/* ── CAKE ── */
+.cake-scene {
+  position: relative;
+  width: clamp(180px, 45vw, 220px);
+  margin: 0 auto 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+}
+.candles-strip {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: -3px;
+  z-index: 5;
+  width: 100%;
+}
+.candle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.flame-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.smoke {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(160,120,80,0.6);
+  opacity: 0;
+  pointer-events: none;
+}
+.smoke.puff {
+  animation: smokePuff 1.5s ease-out forwards;
+}
+@keyframes smokePuff {
+  0% { opacity: 0.8; transform: translateX(-50%) translateY(0) scale(0.5); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-40px) scale(3); }
+}
+.flame {
+  width: 12px;
+  height: 18px;
+  background: #ffcc00;
+  border: 2px solid #4a3b32;
+  border-radius: 50% 50% 20% 20%;
+  margin-bottom: 2px;
+  animation: flicker 0.4s infinite alternate;
+  transform-origin: bottom center;
+  transition: all 0.3s ease;
+}
+.flame.blown {
+  opacity: 0;
+  transform: scale(0);
+}
+@keyframes flicker {
+  from { transform: scale(0.9) rotate(-3deg); }
+  to { transform: scale(1.1) rotate(3deg); }
+}
+.candle-body {
+  width: 12px;
+  height: 35px;
+  background: repeating-linear-gradient(45deg, #fff, #fff 4px, #ff6b6b 4px, #ff6b6b 8px);
+  border: 2px solid #4a3b32;
+  border-radius: 3px 3px 0 0;
+  border-bottom: none;
+}
+
+.cake-art {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 4;
+}
+.tier {
+  position: relative;
+  border: 3px solid #4a3b32;
+  border-bottom: none;
+}
+.tier-top {
+  width: 65%;
+  height: 35px;
+  background: #ffb3c6;
+  border-radius: 12px 12px 0 0;
+}
+.tier-mid {
+  width: 80%;
+  height: 40px;
+  background: #fff3b0;
+  border-radius: 12px 12px 0 0;
+}
+.tier-bot {
+  width: 95%;
+  height: 50px;
+  background: #9bf6ff;
+  border-radius: 12px 12px 5px 5px;
+  border-bottom: 3px solid #4a3b32;
+}
+.drip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: #fff;
+  border-radius: inherit;
+  border-bottom: 3px solid rgba(0,0,0,0.05);
+}
+.kawaii-face {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.eye {
+  width: 8px;
+  height: 8px;
+  background: #4a3b32;
+  border-radius: 50%;
+  animation: blink 3s infinite;
+}
+.mouth {
+  width: 12px;
+  height: 6px;
+  border-bottom: 3px solid #4a3b32;
+  border-radius: 0 0 10px 10px;
+  transition: all 0.3s;
+}
+.mouth.smile {
+  height: 10px;
+  border-radius: 0 0 20px 20px;
+  border-bottom-width: 4px;
+}
+@keyframes blink {
+  0%, 95%, 100% { transform: scaleY(1); }
+  98% { transform: scaleY(0.1); }
+}
+.plate {
+  width: 110%;
+  height: 15px;
+  background: #f1f1f1;
+  border: 3px solid #4a3b32;
+  border-radius: 20px;
+  margin-top: -3px;
+  z-index: 3;
+}
+
+/* ── MIC BAR ── */
+.mic-track {
+  height: 10px;
+  width: 100%;
+  max-width: 250px;
+  background: #f1f1f1;
+  border: 2px solid #4a3b32;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.mic-fill {
+  height: 100%;
+  width: 0%;
+  background: #8bc34a;
+  transition: width 0.1s;
+}
+.blow-hint {
+  font-size: clamp(0.85rem, 3.5vw, 0.95rem);
+  color: #7b6a5e;
+  font-weight: 600;
+}
+
+/* ── MUTE BUTTON ── */
+#mute-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #4a3b32;
+  box-shadow: 0 4px 0 #4a3b32;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 999;
+  display: none; /* hidden on screen 1 */
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  outline: none;
+}
+#mute-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #4a3b32;
+}
+
+.footer {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: #4a3b32;
+  font-weight: 600;
+  opacity: 0.5;
+  z-index: 5;
+}
+</style>
+</head>
+<body>
+
+    <!-- ==========================================
+         TEMPORARY LOCK SCREEN (DELETE LATER)
+         ========================================== -->
+    <style id="temp-lock-style">
+        #temp-lock-screen, #temp-lock-screen * {
+            font-family: system-ui, -apple-system, sans-serif !important;
+            text-shadow: none !important;
+        }
+        #temp-passcode {
+            letter-spacing: 0.8rem !important;
+        }
+    </style>
+    <div id="temp-lock-screen" style="position: fixed; inset: 0; z-index: 99999; background: #f3f4f6; display: flex; align-items: center; justify-content: center;">
+        <div style="background: #ffffff; padding: 3rem 2.5rem; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.06); display: flex; flex-direction: column; align-items: center; max-width: 90%; width: 380px; transition: transform 0.3s ease;">
+            
+            <div style="background: #fef2f2; color: #ef4444; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1.5rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                Temporary Lock
+            </div>
+
+            <h2 style="font-size: 1.6rem; margin: 0 0 0.5rem 0; color: #111827; font-weight: 700;">Restricted Access</h2>
+            <p style="font-size: 0.95rem; color: #6b7280; margin: 0 0 2rem 0; text-align: center;">Please enter the passcode to continue.</p>
+
+            <input type="password" id="temp-passcode" inputmode="numeric" maxlength="4" placeholder="••••" 
+                   style="font-size: 2.5rem; text-align: center; padding: 0.8rem; border: 1.5px solid #e5e7eb; border-radius: 16px; width: 100%; box-sizing: border-box; outline: none; background: #f9fafb; color: #111827; transition: all 0.2s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);"
+                   onfocus="this.style.borderColor='#3b82f6'; this.style.backgroundColor='#ffffff'; this.style.boxShadow='0 0 0 4px rgba(59, 130, 246, 0.1)';"
+                   onblur="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='#f9fafb'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.02)';">
+            
+            <p id="temp-lock-error" style="color: #ef4444; font-size: 0.9rem; margin: 0.8rem 0 0 0; min-height: 1.2rem; opacity: 0; transition: opacity 0.3s; font-weight: 500;">Incorrect passcode</p>
+            
+            <button id="temp-unlock-btn" 
+                    style="margin-top: 1.2rem; padding: 1rem; width: 100%; font-size: 1.1rem; border: none; background: #111827; color: white; border-radius: 14px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.1)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+                Unlock 
+            </button>
+        </div>
+    </div>
+    <!-- ========================================== -->
+
+<!-- Background Scenery -->
+<div class="sun"></div>
+
+<div class="cloud" style="width: 140px; height: 45px; top: 12%; left: -200px; --speed: 45s; animation-delay: -5s;">
+  <div style="position:absolute; width:70px; height:70px; top:-35px; left:20px; background:#fff; border-radius:50%"></div>
+  <div style="position:absolute; width:50px; height:50px; top:-20px; left:70px; background:#fff; border-radius:50%"></div>
+</div>
+<div class="cloud" style="width: 120px; height: 40px; top: 25%; left: -150px; --speed: 35s; animation-delay: -20s;">
+  <div style="position:absolute; width:60px; height:60px; top:-25px; left:30px; background:#fff; border-radius:50%"></div>
+</div>
+<div class="cloud" style="width: 160px; height: 50px; top: 18%; left: -250px; --speed: 55s; animation-delay: -10s;">
+  <div style="position:absolute; width:80px; height:80px; top:-40px; left:30px; background:#fff; border-radius:50%"></div>
+  <div style="position:absolute; width:60px; height:60px; top:-30px; left:90px; background:#fff; border-radius:50%"></div>
+</div>
+
+<svg class="scenery" viewBox="0 0 1000 200" preserveAspectRatio="xMidYMax slice" style="overflow: visible;">
+  <defs>
+    <!-- Grass Foreground Pattern -->
+    <pattern id="grass-front" width="80" height="60" patternUnits="userSpaceOnUse" y="140">
+      <!-- Base -->
+      <rect x="0" y="25" width="80" height="35" fill="#50ab46" />
+      <!-- Spikes -->
+      <path d="M0,25 L5,5 L10,25 L15,10 L22,25 L30,0 L38,25 L45,15 L50,25 L55,5 L62,25 L70,12 L75,25 L80,5 L80,25" fill="#50ab46" />
+      <path d="M3,30 L8,8 L12,30 M25,30 L30,5 L35,30 M45,30 L50,15 L55,30 M65,30 L70,8 L75,30" fill="#388e3c" opacity="0.8"/>
+      <path d="M12,35 L18,10 L22,35 M35,35 L40,8 L45,35 M55,35 L60,12 L65,35 M75,35 L78,15 L80,35" fill="#81c784" opacity="0.8"/>
+    </pattern>
+
+    <!-- White Daisy -->
+    <g id="flower-daisy">
+      <circle cx="0" cy="-6" r="3" fill="#fff" /><circle cx="4" cy="-4" r="3" fill="#fff" />
+      <circle cx="6" cy="0" r="3" fill="#fff" /><circle cx="4" cy="4" r="3" fill="#fff" />
+      <circle cx="0" cy="6" r="3" fill="#fff" /><circle cx="-4" cy="4" r="3" fill="#fff" />
+      <circle cx="-6" cy="0" r="3" fill="#fff" /><circle cx="-4" cy="-4" r="3" fill="#fff" />
+      <circle cx="0" cy="0" r="2.5" fill="#fbc02d" />
+    </g>
+    
+    <!-- Red Flower -->
+    <g id="flower-red">
+      <circle cx="0" cy="-4" r="3" fill="#e53935" /><circle cx="4" cy="-1" r="3" fill="#e53935" />
+      <circle cx="2" cy="4" r="3" fill="#e53935" /><circle cx="-2" cy="4" r="3" fill="#e53935" />
+      <circle cx="-4" cy="-1" r="3" fill="#e53935" />
+      <circle cx="0" cy="0" r="1.5" fill="#fbc02d" />
+    </g>
+
+    <!-- Pink Bell -->
+    <g id="flower-pink">
+      <path d="M0,0 Q-5,-10 -12,-15 Q-5,-18 0,-15 Q5,-18 12,-15 Q5,-10 0,0" fill="#f06292" />
+      <path d="M-6,-15 L0,-20 L6,-15 Z" fill="#f06292" />
+    </g>
+  </defs>
+
+  <!-- Mountains -->
+  <path d="M0,100 L50,85 L120,105 L200,80 L280,110 L350,90 L450,115 L550,85 L650,110 L750,90 L850,115 L950,80 L1000,100 L1000,200 L0,200 Z" fill="#d0e2ea" />
+  
+  <!-- Birds -->
+  <g fill="#777" transform="translate(500, 70) scale(0.6)">
+    <path d="M0,0 Q5,-5 10,0 Q5,-2 0,-3 Q-5,-2 -10,0 Q-5,-5 0,0" />
+    <path d="M25,5 Q30,0 35,5 Q30,3 25,2 Q20,3 15,5 Q20,0 25,5" />
+    <path d="M-20,10 Q-15,5 -10,10 Q-15,8 -20,7 Q-25,8 -30,10 Q-25,5 -20,10" />
+    <path d="M45,-10 Q50,-15 55,-10 Q50,-12 45,-13 Q40,-12 35,-10 Q40,-15 45,-10" />
+  </g>
+
+  <!-- Hills -->
+  <path d="M0,120 Q200,100 450,115 L450,200 L0,200 Z" fill="#388e3c" />
+  <path d="M300,115 Q650,90 1000,110 L1000,200 L300,200 Z" fill="#4caf50" />
+  <path d="M0,130 Q150,120 400,135 T800,125 L1000,135 L1000,200 L0,200 Z" fill="#66bb6a" />
+  <path d="M500,130 Q800,110 1000,135 L1000,200 L500,200 Z" fill="#4caf50" />
+
+  <!-- Dirt Path -->
+  <path d="M480,125 Q480,135 520,145 T850,180 L750,180 Q550,150 490,140 Q470,135 470,125 Z" fill="#f4d187" />
+
+  <!-- Trees -->
+  <!-- Left Tree -->
+  <g transform="translate(150, 110) scale(1)">
+    <rect x="-4" y="-20" width="8" height="40" fill="#5d4037" />
+    <path d="M0,-50 C-20,-50 -35,-30 -25,-10 C-35,10 -15,20 0,15 C15,20 35,10 25,-10 C35,-30 20,-50 0,-50 Z" fill="#4caf50" />
+    <path d="M0,-45 C-15,-45 -25,-30 -15,-15 C-25,0 -10,10 0,5 C10,10 25,0 15,-15 C25,-30 15,-45 0,-45 Z" fill="#66bb6a" />
+  </g>
+  <!-- Right Tree -->
+  <g transform="translate(830, 105) scale(1.2)">
+    <rect x="-4" y="-20" width="8" height="40" fill="#5d4037" />
+    <path d="M-4,10 L4,10 L1,-20 L-1,-20 Z" fill="#4e342e" />
+    
+    <!-- Leaves (Back dark green) -->
+    <circle cx="-15" cy="-25" r="22" fill="#4caf50" />
+    <circle cx="15" cy="-20" r="18" fill="#4caf50" />
+    <circle cx="0" cy="-45" r="24" fill="#4caf50" />
+    
+    <!-- Leaves (Front light green) -->
+    <circle cx="-12" cy="-28" r="15" fill="#66bb6a" />
+    <circle cx="12" cy="-24" r="12" fill="#66bb6a" />
+    <circle cx="0" cy="-45" r="16" fill="#66bb6a" />
+  </g>
+  <!-- Mid Trees -->
+  <g transform="translate(280, 115) scale(0.75)">
+    <rect x="-3" y="-20" width="6" height="30" fill="#5d4037" />
+    <circle cx="-10" cy="-20" r="15" fill="#4caf50" />
+    <circle cx="10" cy="-18" r="14" fill="#4caf50" />
+    <circle cx="0" cy="-35" r="18" fill="#4caf50" />
+    <circle cx="-8" cy="-22" r="10" fill="#66bb6a" />
+    <circle cx="8" cy="-19" r="9" fill="#66bb6a" />
+    <circle cx="0" cy="-35" r="12" fill="#66bb6a" />
+  </g>
+  <g transform="translate(680, 118) scale(0.65)">
+    <rect x="-3" y="-20" width="6" height="30" fill="#5d4037" />
+    <path d="M0,-40 C-15,-40 -25,-25 -15,-10 C-25,5 -10,15 0,10 C10,15 25,5 15,-10 C25,-25 15,-40 0,-40 Z" fill="#388e3c" />
+    <path d="M0,-35 C-10,-35 -18,-20 -10,-10 C-18,0 -8,8 0,5 C8,8 18,0 10,-10 C18,-20 10,-35 0,-35 Z" fill="#4caf50" />
+  </g>
+
+  <!-- Distant Trees -->
+  <g transform="translate(380, 125) scale(0.45)">
+    <rect x="-2" y="-10" width="4" height="20" fill="#5d4037" />
+    <circle cx="0" cy="-15" r="15" fill="#4caf50" />
+  </g>
+  <g transform="translate(420, 120) scale(0.5)">
+    <rect x="-2" y="-10" width="4" height="20" fill="#5d4037" />
+    <circle cx="0" cy="-15" r="15" fill="#388e3c" />
+    <circle cx="-8" cy="-5" r="10" fill="#388e3c" />
+    <circle cx="8" cy="-5" r="10" fill="#388e3c" />
+  </g>
+  <g transform="translate(480, 128) scale(0.35)">
+    <rect x="-2" y="-10" width="4" height="20" fill="#5d4037" />
+    <circle cx="0" cy="-15" r="15" fill="#66bb6a" />
+  </g>
+  <g transform="translate(520, 122) scale(0.4)">
+    <rect x="-2" y="-10" width="4" height="20" fill="#5d4037" />
+    <circle cx="0" cy="-15" r="15" fill="#4caf50" />
+  </g>
+  <g transform="translate(580, 125) scale(0.5)">
+    <rect x="-2" y="-10" width="4" height="20" fill="#5d4037" />
+    <circle cx="0" cy="-15" r="15" fill="#388e3c" />
+    <circle cx="-8" cy="-5" r="10" fill="#388e3c" />
+    <circle cx="8" cy="-5" r="10" fill="#388e3c" />
+  </g>
+  <g transform="translate(950, 115) scale(0.8)">
+    <rect x="-3" y="-20" width="6" height="30" fill="#5d4037" />
+    <circle cx="-10" cy="-20" r="15" fill="#4caf50" />
+    <circle cx="10" cy="-18" r="14" fill="#4caf50" />
+    <circle cx="0" cy="-35" r="18" fill="#4caf50" />
+    <circle cx="-8" cy="-22" r="10" fill="#66bb6a" />
+    <circle cx="8" cy="-19" r="9" fill="#66bb6a" />
+    <circle cx="0" cy="-35" r="12" fill="#66bb6a" />
+  </g>
+
+  <!-- Distant flowers -->
+  <g fill="#fff">
+    <circle cx="450" cy="140" r="1.5"/><circle cx="470" cy="145" r="1.5"/>
+    <circle cx="510" cy="138" r="1.5"/><circle cx="530" cy="142" r="1.5"/>
+    <circle cx="560" cy="135" r="1.5"/><circle cx="580" cy="140" r="1.5"/>
+    <circle cx="610" cy="135" r="1.5"/><circle cx="630" cy="140" r="1.5"/>
+    <circle cx="660" cy="137" r="1.5"/><circle cx="690" cy="140" r="1.5"/>
+  </g>
+
+  <!-- Ground Layer Front -->
+  <path d="M0,150 Q400,130 1000,150 L1000,200 L0,200 Z" fill="#81c784" />
+  
+  <!-- Foreground Grass -->
+  <rect x="0" y="140" width="1000" height="60" fill="url(#grass-front)" />
+
+  <!-- Daisies in Grass -->
+  <g transform="translate(80, 180)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-daisy"/></g>
+  <g transform="translate(220, 160)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-daisy"/></g>
+  <g transform="translate(300, 185)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-daisy"/></g>
+  <g transform="translate(550, 165)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-daisy"/></g>
+  <g transform="translate(700, 180)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-daisy"/></g>
+  <g transform="translate(820, 160)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-daisy"/></g>
+  <g transform="translate(930, 175) scale(1.3)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-daisy"/></g>
+  
+  <!-- Red Flowers -->
+  <g transform="translate(140, 170) scale(1.2)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-red"/></g>
+  <g transform="translate(380, 175)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-red"/></g>
+  <g transform="translate(680, 165) scale(1.3)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-red"/></g>
+  <g transform="translate(800, 185)"><path d="M0,0 L0,15" stroke="#2e7d32" stroke-width="2"/><use href="#flower-red"/></g>
+
+  <!-- Pink Bells -->
+  <g transform="translate(50, 160) scale(1.4)"><path d="M0,0 L-5,25" stroke="#2e7d32" stroke-width="1.5"/><use href="#flower-pink" transform="rotate(-15)"/></g>
+  <g transform="translate(350, 165) scale(1.5)"><path d="M0,0 L0,25" stroke="#2e7d32" stroke-width="1.5"/><use href="#flower-pink" transform="rotate(5)"/></g>
+  <g transform="translate(620, 160) scale(1.3)"><path d="M0,0 L5,25" stroke="#2e7d32" stroke-width="1.5"/><use href="#flower-pink" transform="rotate(15)"/></g>
+  <g transform="translate(870, 170) scale(1.5)"><path d="M0,0 L-5,25" stroke="#2e7d32" stroke-width="1.5"/><use href="#flower-pink" transform="rotate(-10)"/></g>
+
+  <!-- Butterflies -->
+  <!-- Blue Butterfly -->
+  <g transform="translate(240, 150) scale(1.2)">
+    <path d="M0,0 Q-8,-8 -12,0 Q-8,8 0,0" fill="#42a5f5" />
+    <path d="M0,0 Q8,-8 12,0 Q8,8 0,0" fill="#42a5f5" />
+    <path d="M0,0 Q-5,10 -8,5 Q-5,0 0,0" fill="#1e88e5" />
+    <path d="M0,0 Q5,10 8,5 Q5,0 0,0" fill="#1e88e5" />
+    <rect x="-0.5" y="-3" width="1" height="8" fill="#333" />
+  </g>
+  <!-- Red Butterfly -->
+  <g transform="translate(480, 140) scale(1)">
+    <path d="M0,0 Q-8,-8 -12,0 Q-8,8 0,0" fill="#ef5350" />
+    <path d="M0,0 Q8,-8 12,0 Q8,8 0,0" fill="#ef5350" />
+    <path d="M0,0 Q-5,10 -8,5 Q-5,0 0,0" fill="#c62828" />
+    <path d="M0,0 Q5,10 8,5 Q5,0 0,0" fill="#c62828" />
+    <rect x="-0.5" y="-3" width="1" height="8" fill="#333" />
+  </g>
+  <!-- Small Blue Butterfly -->
+  <g transform="translate(890, 160) scale(0.8)">
+    <path d="M0,0 Q-8,-8 -12,0 Q-8,8 0,0" fill="#42a5f5" />
+    <path d="M0,0 Q8,-8 12,0 Q8,8 0,0" fill="#42a5f5" />
+    <rect x="-0.5" y="-3" width="1" height="8" fill="#333" />
+  </g>
+  
+</svg>
+
+<div id="app">
+  <!-- Screen 1: Intro -->
+  <div class="screen active" id="s-intro">
+    <div class="card">
+      <div class="emoji-icon">🎂</div>
+      <h1 class="title">Happy Birthday!</h1>
+      <p class="subtitle">Take a moment, close your eyes, and think of a beautiful birthday wish.</p>
+      <button class="cta" id="start-btn">I'm Ready!</button>
+    </div>
+  </div>
+
+  <!-- Screen 2: Wish -->
+  <div class="screen" id="s-wish">
+    <div class="card">
+      <h2 class="title" style="margin-bottom: 15px;">Make Your Wish!</h2>
+      
+      <div class="cake-scene" id="cake-scene" tabindex="0" role="button" aria-label="Tap to blow out candles">
+         <div class="candles-strip">
+           <div class="candle-wrap"><div class="flame-wrap"><div class="smoke"></div><div class="flame"></div></div><div class="candle-body"></div></div>
+           <div class="candle-wrap"><div class="flame-wrap"><div class="smoke"></div><div class="flame"></div></div><div class="candle-body"></div></div>
+           <div class="candle-wrap"><div class="flame-wrap"><div class="smoke"></div><div class="flame"></div></div><div class="candle-body"></div></div>
+           <div class="candle-wrap"><div class="flame-wrap"><div class="smoke"></div><div class="flame"></div></div><div class="candle-body"></div></div>
+           <div class="candle-wrap"><div class="flame-wrap"><div class="smoke"></div><div class="flame"></div></div><div class="candle-body"></div></div>
+         </div>
+         <div class="cake-art">
+           <div class="tier tier-top"><div class="drip"></div></div>
+           <div class="tier tier-mid"><div class="drip"></div></div>
+           <div class="tier tier-bot">
+             <div class="drip"></div>
+             <div class="kawaii-face">
+               <div class="eye"></div>
+               <div class="mouth"></div>
+               <div class="eye"></div>
+             </div>
+           </div>
+         </div>
+         <div class="plate"></div>
+      </div>
+
+      <div class="mic-track"><div class="mic-fill" id="mic-fill"></div></div>
+      <p class="blow-hint" id="blow-hint">🎤 Blow gently into your mic to blow out the candles...<br><span style="font-size: 0.85rem; opacity: 0.7;">or tap the cake</span></p>
+    </div>
+  </div>
+
+  <!-- Screen 3: Reveal -->
+  <div class="screen" id="s-reveal">
+    <div class="card" style="padding-bottom: 3.5rem;">
+      <div class="emoji-icon" style="font-size: 4rem;">🎉</div>
+      <h2 class="title">Wish Sent!</h2>
+      <p class="subtitle" style="margin-bottom: 0;">Your birthday wish is drifting gently on the warm afternoon breeze.</p>
+    </div>
+  </div>
+</div>
+
+<button id="mute-btn" aria-label="Toggle music">🎵</button>
+<div class="footer">Made with ❤ by Nafis</div>
+
+<audio id="bg-music" src="music/Bdaymusic.mp3" loop preload="auto"></audio>
+
+<script>
+        /* ==========================================
+           TEMPORARY LOCK JS (DELETE LATER)
+           ========================================== */
+        const tempUnlockBtn = document.getElementById('temp-unlock-btn');
+        const tempPassInput = document.getElementById('temp-passcode');
+        const tempLockError = document.getElementById('temp-lock-error');
+
+        function tempCheckPasscode() {
+            const now = new Date();
+            let h = now.getHours();
+            let m = now.getMinutes();
+            let h12 = h % 12 || 12;
+            let mStr = m < 10 ? '0' + m : m;
+            
+            let valids = [`${h12}${mStr}`, `${h}${mStr}`, (h12 < 10 ? `0${h12}${mStr}` : `${h12}${mStr}`), (h < 10 ? `0${h}${mStr}` : `${h}${mStr}`)];
+            if (valids.includes(tempPassInput.value.trim())) {
+                document.getElementById('temp-lock-screen').style.display = 'none';
+            } else {
+                tempLockError.style.opacity = '1';
+                tempPassInput.value = '';
+                setTimeout(() => tempLockError.style.opacity = '0', 2000);
+            }
+        }
+        tempUnlockBtn.addEventListener('click', tempCheckPasscode);
+        tempPassInput.addEventListener('keydown', e => { if (e.key === 'Enter') tempCheckPasscode(); });
+        /* ========================================== */
+
+/* ── MUSIC ── */
+const music = document.getElementById('bg-music');
+music.volume = 0.8;
+let musicOn = false;
+const muteBtn = document.getElementById('mute-btn');
+
+function startMusic(){
+  muteBtn.style.display = 'flex'; // Reveal mute button only when music starts
+  music.play().then(()=>{
+    musicOn = true;
+    muteBtn.textContent = '🎵';
+  }).catch(()=>{});
+}
+muteBtn.addEventListener('click', ()=>{
+  if(musicOn){
+    music.pause();
+    musicOn = false;
+    muteBtn.textContent = '🔇';
+  } else {
+    music.play().then(()=>{
+      musicOn = true;
+      muteBtn.textContent = '🎵';
+    }).catch(()=>{});
+  }
+});
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden) music.pause();
+  else if(musicOn) music.play().catch(()=>{});
+});
+
+/* ── SCREENS ── */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+}
+
+/* ── MIC / BLOW ── */
+let audioCtx, analyser, micStream, animId, ambient=0, micStart=0, blown=false;
+const micFill = document.getElementById('mic-fill');
+const blowHint = document.getElementById('blow-hint');
+
+async function initMic(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    fallback();
+    return;
+  }
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({audio:true, video:false});
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.smoothingTimeConstant = 0.3; 
+    analyser.fftSize = 512;
+    audioCtx.createMediaStreamSource(micStream).connect(analyser);
+    micStart = Date.now(); 
+    ambient = 0;
+    detectBlow();
+  } catch(e) {
+    fallback();
+  }
+}
+
+function fallback(){
+  blowHint.innerHTML = '🎂 Tap the cake to make your wish!';
+}
+
+function detectBlow(){
+  if(blown) return;
+  const buf = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(buf);
+  const bins = Math.min(20, buf.length);
+  let s = 0; 
+  for(let i=0; i<bins; i++) s += buf[i];
+  const avg = s/bins;
+  
+  micFill.style.width = Math.min(100, (avg/145)*100) + '%';
+  const elapsed = Date.now() - micStart;
+  
+  if(elapsed < 1400){
+    ambient = ambient === 0 ? avg : ambient*0.8 + avg*0.2;
+  } else {
+    if(avg > ambient + 58 && avg > 82) {
+      doBlowOut();
+      return;
+    }
+    ambient = ambient*0.98 + avg*0.02;
+  }
+  animId = requestAnimationFrame(detectBlow);
+}
+
+function doBlowOut(){
+  if(blown) return;
+  blown = true;
+  cancelAnimationFrame(animId);
+  micFill.style.width = '0%';
+  if(micStream) micStream.getTracks().forEach(t => t.stop());
+  
+  document.querySelectorAll('.flame').forEach(f => f.classList.add('blown'));
+  document.querySelectorAll('.smoke').forEach(s => s.classList.add('puff'));
+  document.querySelector('.mouth').classList.add('smile');
+  
+  blowHint.textContent = '🌿 Your wish is floating away...';
+  
+  setTimeout(()=>{
+    show('s-reveal');
+    launchConfetti();
+    startMusic();
+  }, 1200);
+}
+
+/* ── CONFETTI ── */
+function launchConfetti(){
+  const cols = ['#ff6b6b', '#ffb3c6', '#fff3b0', '#9bf6ff', '#8bc34a'];
+  confetti({particleCount: 130, spread: 105, origin: {y: 0.55}, startVelocity: 42, colors: cols, zIndex: 200});
+  const iv = setInterval(()=>
+    confetti({particleCount: 22, spread: 70, origin: {x: Math.random(), y: Math.random()*0.5}, colors: cols, zIndex: 200})
+  , 300);
+  setTimeout(()=> clearInterval(iv), 4000);
+}
+
+/* ── EVENTS ── */
+document.getElementById('start-btn').addEventListener('click', ()=>{
+  show('s-wish');
+  setTimeout(initMic, 300);
+});
+
+document.getElementById('cake-scene').addEventListener('click', ()=>{
+  if(!blown) doBlowOut();
+});
+
+
+</script>
+</body>
+</html>

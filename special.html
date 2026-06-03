@@ -18,8 +18,8 @@
     <meta property="og:title" content="Something arrived for you 🤔">
     <meta property="og:description"
         content="Click to open your special birthday surprise! A magical letter is waiting... 🎁">
-    <meta property="og:url" content="https://abidalnafis.github.io/wish/september.html">
-    <meta property="og:image" content="https://abidalnafis.github.io/wish/img/september_cake.png">
+    <meta property="og:url" content="https://abidalnafis.github.io/wish/special.html">
+    <meta property="og:image" content="https://abidalnafis.github.io/wish/img/special_birthday.png">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Afia's Birthday">
 
@@ -28,7 +28,7 @@
     <meta name="twitter:title" content="Something arrived for you 🤔">
     <meta name="twitter:description"
         content="Click to open your special birthday surprise! A magical letter is waiting... 🎁">
-    <meta name="twitter:image" content="https://abidalnafis.github.io/wish/img/september_cake.png">
+    <meta name="twitter:image" content="https://abidalnafis.github.io/wish/img/special_birthday.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,7 +39,7 @@
         crossorigin="anonymous"></script>
 
     <style>
-        /* ─── ROOT TOKENS ─── */
+        /* ─── ROOT TOKENS (PRESERVING RICH CELEBRATORY AUTUMN COLORS) ─── */
         :root {
             --bg: #0c1520;
             --text: #f0e6d3;
@@ -158,7 +158,7 @@
             }
         }
 
-        /* ─── LEAVES ─── */
+        /* ─── FALLING FLOWERS ─── */
         #leaves {
             position: fixed;
             inset: 0;
@@ -470,15 +470,9 @@
             margin-bottom: 3vh;
         }
 
-        /* ── CAKE ASSEMBLY ──
-       Structure: cake-scene (fixed size)
-         └─ candles-strip   (absolute, sits on top of cake)
-         └─ cake-art        (the three tiers)
-    ────────────────────── */
         .cake-scene {
             position: relative;
             width: clamp(200px, 56vw, 260px);
-            /* height will be natural; use margin for spacing */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -492,7 +486,6 @@
             justify-content: center;
             align-items: flex-end;
             gap: 12px;
-            /* sits just above the top cake tier */
             margin-bottom: -1px;
             z-index: 4;
             position: relative;
@@ -658,7 +651,7 @@
             justify-content: center;
         }
 
-        /* Sprinkle dots dots */
+        /* Sprinkle dots */
         .dots {
             position: absolute;
             inset: 0;
@@ -957,9 +950,7 @@
             }
         }
 
-        /* ══════════════════════════════════════
-       SIDE CHARACTERS (post-reveal)
-    ══════════════════════════════════════ */
+        /* ─── SIDE CHARACTERS (post-reveal) ─── */
         .side {
             position: fixed;
             z-index: 3;
@@ -967,7 +958,6 @@
             display: none;
             font-size: clamp(2.2rem, 6vw, 3.6rem);
         }
-
 
         .side.fox {
             bottom: 2%;
@@ -989,7 +979,6 @@
             animation: drift 6s ease-in-out infinite alternate;
             font-size: clamp(1.2rem, 4vw, 2.2rem);
         }
-
 
         @keyframes sway2 {
             from {
@@ -1076,8 +1065,6 @@
             pointer-events: none;
             letter-spacing: .3px;
         }
-
-
 
         /* ══════════════════════════════════════
        RESPONSIVE OVERRIDES
@@ -1198,7 +1185,7 @@
             fill: currentColor;
         }
 
-        /* Hide during capture (if any) */
+        /* Hide during capture */
         .taking-screenshot .share-fab,
         .taking-screenshot .music-fab,
         .taking-screenshot .replay-btn {
@@ -1214,7 +1201,7 @@
             color: #f5c54a !important;
         }
 
-        /* Simplify SVGs for html2canvas (remove problematic filters) */
+        /* Simplify SVGs for html2canvas */
         .taking-screenshot svg filter,
         .taking-screenshot svg defs filter {
             display: none !important;
@@ -1227,7 +1214,6 @@
         .taking-screenshot #tree-branch {
             filter: none !important;
         }
-
 
         button {
             outline: none;
@@ -1249,10 +1235,8 @@
             var isIOS = /iPhone|iPad|iPod/.test(ua);
 
             if (isIOS) {
-                // Try Chrome first; if not installed the attempt silently fails
                 location.href = url.replace(/^https?:/, 'googlechrome:');
             } else {
-                // Android: intent URL opens Chrome directly
                 location.href = 'intent://' + url.replace(/^https?:\/\//, '') +
                     '#Intent;scheme=https;package=com.android.chrome;' +
                     'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
@@ -1261,7 +1245,7 @@
     </script>
 
     <!-- ==========================================
-         TEMPORARY LOCK SCREEN (DELETE LATER)
+         TEMPORARY LOCK SCREEN
          ========================================== -->
     <style id="temp-lock-style">
         #temp-lock-screen,
@@ -1333,8 +1317,6 @@
     </script>
     <!-- ========================================== -->
 
-
-
     <div id="starfield"></div>
     <div class="moon-bg">
         <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
@@ -1378,26 +1360,42 @@
     </div>
     <div id="leaves"></div>
 
-    <!-- DECORATIVE TREE BRANCH -->
+    <!-- DECORATIVE TREE BRANCH WITH WHITE FLOWERS & BLOSSOMS -->
     <svg id="tree-branch" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMin meet"
         aria-hidden="true">
         <defs>
             <filter id="branchDrop">
                 <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity="0.35" />
             </filter>
-            <!-- Leaf shape -->
+            <!-- Leaf outline for branch reference -->
             <path id="leafShape" d="M0,0 C-15,-20 -30,-15 -35,5 C-25,20 0,15 0,0 Z" />
+
+            <!-- Large White Flower with Gold Center -->
             <g id="bl-org">
-                <use href="#leafShape" fill="#e8874f" />
-                <path d="M0,0 L10,5" stroke="#964019" stroke-width="1.5" />
+                <circle cx="0" cy="-6" r="5.5" fill="#ffffff" />
+                <circle cx="5.5" cy="-2" r="5.5" fill="#f8fafc" />
+                <circle cx="3.5" cy="4.5" r="5.5" fill="#ffffff" />
+                <circle cx="-3.5" cy="4.5" r="5.5" fill="#f8fafc" />
+                <circle cx="-5.5" cy="-2" r="5.5" fill="#ffffff" />
+                <circle cx="0" cy="0" r="2.5" fill="#f5c54a" />
             </g>
+            <!-- Medium White Flower with Gold Center -->
             <g id="bl-red">
-                <use href="#leafShape" fill="#d4704a" />
-                <path d="M0,0 L10,5" stroke="#7a2d1d" stroke-width="1.5" />
+                <circle cx="0" cy="-5" r="5" fill="#ffffff" />
+                <circle cx="5" cy="-1.8" r="5" fill="#f8fafc" />
+                <circle cx="3" cy="4" r="5" fill="#ffffff" />
+                <circle cx="-3" cy="4" r="5" fill="#f8fafc" />
+                <circle cx="-5" cy="-1.8" r="5" fill="#ffffff" />
+                <circle cx="0" cy="0" r="2.2" fill="#f5c54a" />
             </g>
+            <!-- Small White Flower Bud -->
             <g id="bl-yel">
-                <use href="#leafShape" fill="#f5c54a" />
-                <path d="M0,0 L10,5" stroke="#a67c1e" stroke-width="1.5" />
+                <circle cx="0" cy="-4" r="4" fill="#ffffff" opacity="0.9" />
+                <circle cx="4" cy="-1" r="4" fill="#ffffff" opacity="0.9" />
+                <circle cx="2.5" cy="3" r="4" fill="#ffffff" opacity="0.9" />
+                <circle cx="-2.5" cy="3" r="4" fill="#ffffff" opacity="0.9" />
+                <circle cx="-4" cy="-1" r="4" fill="#ffffff" opacity="0.9" />
+                <circle cx="0" cy="0" r="1.8" fill="#f5c54a" />
             </g>
         </defs>
 
@@ -1417,7 +1415,7 @@
                 stroke-linecap="round" />
         </g>
 
-        <!-- Attached Leaves -->
+        <!-- Attached Leaves / Flowers -->
         <!-- Top Left -->
         <use href="#bl-yel" x="40" y="120" transform="rotate(20 40 120) scale(0.9)" />
         <use href="#bl-red" x="25" y="105" transform="rotate(-35 25 105) scale(1.1)" />
@@ -1467,7 +1465,7 @@
                             <rect x="4" y="40" width="192" height="110" rx="9" fill="url(#eg-front)"
                                 stroke="rgba(255,255,255,.4)" stroke-width="1.5" />
 
-                            <!-- V-flap silhouette mimicking reference envelope -->
+                            <!-- V-flap silhouette -->
                             <polygon points="4,40 100,95 196,40" fill="rgba(255,255,255,0.15)" />
 
                             <!-- Subtle interior border details -->
@@ -1499,7 +1497,7 @@
                             <line x1="196" y1="150" x2="100" y2="95" stroke="rgba(255,255,255,.4)" stroke-width="1.5" />
                         </svg>
 
-                        <!-- 2. The Letter (HTML Div avoids Safari SVG transform clipping bugs) -->
+                        <!-- 2. The Letter -->
                         <div class="env-letter">
                             <svg viewBox="0 0 100 100"
                                 style="width: 100%; height: 100%; overflow: visible; padding: 4px; box-sizing: border-box;">
@@ -1523,7 +1521,7 @@
                             </svg>
                         </div>
 
-                        <!-- 3. Flap and Seal Overlay (In front of letter HTML) -->
+                        <!-- 3. Flap and Seal Overlay -->
                         <svg viewBox="0 0 200 154" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none;">
                             <defs>
@@ -1535,16 +1533,16 @@
                             <g class="env-flap">
                                 <polygon points="4,40 196,40 100,94" fill="url(#fg-back)" stroke="rgba(255,255,255,.2)"
                                     stroke-width="1.5" />
-                                <circle cx="100" cy="112" r="16" fill="#e8874f" stroke="rgba(255,255,255,.55)"
+                                <circle cx="100" cy="112" r="16" fill="#ffffff" stroke="rgba(255,255,255,.55)"
                                     stroke-width="1.5" stroke-dasharray="5 3" />
-                                <text x="100" y="118" text-anchor="middle" font-size="16">🍂</text>
+                                <text x="100" y="118" text-anchor="middle" font-size="16">💮</text>
                             </g>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <button class="cta-btn" id="open-btn">Open Your Letter 🍂</button>
+            <button class="cta-btn" id="open-btn">Open Your Letter 💮</button>
         </div>
 
         <!-- ─── SCREEN 2: MAKE A WISH ─── -->
@@ -1554,7 +1552,7 @@
             <!-- Cake Scene -->
             <div class="cake-scene" id="cake-scene">
 
-                <!-- Candle strip — sits on top of cake, aligned by flex -->
+                <!-- Candle strip -->
                 <div class="candle-strip" id="candle-strip">
                     <!-- JS inserts candle items here -->
                 </div>
@@ -1562,7 +1560,7 @@
                 <!-- Three-tier cake -->
                 <div class="cake-art">
                     <div class="tier tier-top">
-                        <span style="font-size:.75rem;opacity:.75;margin-top:6px;z-index:2;position:relative;">🍂</span>
+                        <span style="font-size:.75rem;opacity:.85;margin-top:6px;z-index:2;position:relative;">💮</span>
                         <div class="dots">
                             <div class="dot" style="top:20%; left:20%;"></div>
                             <div class="dot" style="top:50%; left:80%;"></div>
@@ -1663,13 +1661,13 @@
                 <p class="bn-text">I know you're going to be an amazing doctor, and may you
                     touch many lives with your kindness. 🩺</p>
                 <p class="bn-text">Wherever you go, may joy and love always stay<br>with you. <span
-                        class="inline-leaf">🍂</span></p>
+                        class="inline-leaf">💮</span></p>
                 <p class="bn-text">And yes – don't forget the treat! 🙂</p>
                 <p class="with-love">– Nafis</p>
 
                 <!-- Tiny decorations on card edges -->
-                <div class="card-deco deco-tr">🍂</div>
-                <div class="card-deco deco-bm">🍂</div>
+                <div class="card-deco deco-tr">💮</div>
+                <div class="card-deco deco-bm">💮</div>
             </div>
 
             <button class="replay-btn" id="replay-btn" style="display: none;">🔄</button>
@@ -1699,26 +1697,33 @@
             }
         })();
 
-        /* ═══════════════════ LEAVES ═══════════════════ */
+        /* ═══════════════════ LEAVES (WHITE FLOWERS & PETALS) ═══════════════════ */
         (function () {
             const lc = document.getElementById('leaves');
-            const cols = ['#e8874f', '#d4704a', '#f5c54a'];
-            const strokes = ['#964019', '#7a2d1d', '#a67c1e'];
+
+            // White flowers and white blossom petals drifting down
+            const elements = [
+                // White flower with a gold center
+                `<svg viewBox="-12 -12 24 24" style="width:1.4em;height:1.4em;overflow:visible;">
+                    <circle cx="0" cy="-7" r="6" fill="#ffffff" />
+                    <circle cx="7" cy="-2" r="6" fill="#f8fafc" />
+                    <circle cx="4" cy="5" r="6" fill="#ffffff" />
+                    <circle cx="-4" cy="5" r="6" fill="#f8fafc" />
+                    <circle cx="-7" cy="-2" r="6" fill="#ffffff" />
+                    <circle cx="0" cy="0" r="3" fill="#f5c54a" />
+                </svg>`,
+                // White blossom petal
+                `<svg viewBox="-10 -10 20 20" style="width:1.2em;height:1.2em;overflow:visible;">
+                    <path d="M0,0 C-5,-10 -10,-5 -10,0 C-10,5 -5,10 0,0 Z" fill="#ffffff" opacity="0.9" />
+                </svg>`
+            ];
 
             const count = window.innerWidth < 660 ? 15 : 28;
             for (let i = 0; i < count; i++) {
                 const l = document.createElement('div'); l.className = 'leaf';
+                const elHtml = elements[i % elements.length];
+                l.innerHTML = elHtml;
 
-                const cIdx = i % 3;
-                const fill = cols[cIdx];
-                const stroke = strokes[cIdx];
-
-                l.innerHTML = `<svg viewBox="-40 -25 50 50" style="width:1.4em;height:1.4em;overflow:visible;">
-                    <path d="M0,0 C-15,-20 -30,-15 -35,5 C-25,20 0,15 0,0 Z" fill="${fill}" />
-                    <path d="M0,0 L10,5" stroke="${stroke}" stroke-width="1.5" fill="none" />
-                </svg>`;
-
-                // Spawn across the entire screen (and a bit further right so they drift in)
                 const spawnX = Math.random() * 120 - 10;
                 l.style.cssText = `left:${spawnX}%;--ld:${6 + Math.random() * 8}s;--ldl:${Math.random() * 14}s;--ls:${.65 + Math.random() * .7}rem`;
                 lc.appendChild(l);
@@ -1734,14 +1739,14 @@
         CANDLE_COLORS.forEach((col, i) => {
             const item = document.createElement('div'); item.className = 'c-item';
             item.innerHTML = `
-    <div style="position:relative">
-      <svg id="fl${i}" class="c-flame" viewBox="0 0 12 20" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6,0 C6,0 12,12 12,15 C12,18.3 9.3,21 6,21 C2.7,21 0,18.3 0,15 C0,12 6,0 6,0 Z" fill="#fbbf24" />
-      </svg>
-      <div id="sm${i}" class="c-smoke"></div>
-    </div>
-    <div class="c-body" style="background:linear-gradient(160deg,${col},${col}99)"></div>
-  `;
+                <div style="position:relative">
+                  <svg id="fl${i}" class="c-flame" viewBox="0 0 12 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6,0 C6,0 12,12 12,15 C12,18.3 9.3,21 6,21 C2.7,21 0,18.3 0,15 C0,12 6,0 6,0 Z" fill="#fbbf24" />
+                  </svg>
+                  <div id="sm${i}" class="c-smoke"></div>
+                </div>
+                <div class="c-body" style="background:linear-gradient(160deg,${col},${col}99)"></div>
+            `;
             strip.appendChild(item);
             flames.push(document.getElementById(`fl${i}`));
         });
@@ -1753,7 +1758,7 @@
         }
 
         /* ==========================================
-           TEMPORARY LOCK JS (DELETE LATER)
+           TEMPORARY LOCK JS
            ========================================== */
         const tempUnlockBtn = document.getElementById('temp-unlock-btn');
         const tempPassInput = document.getElementById('temp-passcode');
@@ -1803,7 +1808,6 @@
             envWrap.classList.add('opening');
             openBtn.disabled = true; openBtn.textContent = '✨ Opening…';
 
-            // Resume AudioContext on first interaction
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
@@ -1821,7 +1825,6 @@
         const micFill = document.getElementById('mic-fill');
         const blowHint = document.getElementById('blow-hint');
 
-        /* ── Detect in-app / WebView browser ── */
         function isInAppBrowser() {
             const ua = navigator.userAgent || '';
             return /FBAN|FBAV|Instagram|Messenger|LinkedInApp|MicroMessenger|Line\/|Snapchat|TikTok|musical_ly|BytedanceWebview|GSA\/|YaBrowser|MiuiBrowser|SamsungBrowser/.test(ua);
@@ -1832,17 +1835,13 @@
         }
 
         async function initMic() {
-            // Always allow tapping as a fallback
             const cake = document.getElementById('cake-scene');
             cake.style.cursor = 'pointer';
             cake.onclick = blowNext;
-
-            // Start directly since we auto-redirect out of WebView
             startMic();
         }
 
         async function startMic() {
-            // If navigator.mediaDevices is outright missing, fail fast
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 showOpenInBrowserHint();
                 return;
@@ -1860,7 +1859,7 @@
                 if (isInAppBrowser()) {
                     showOpenInBrowserHint();
                 } else {
-                    blowHint.innerHTML = '🍂 Mic access blocked. Tap the cake to blow out candles!';
+                    blowHint.innerHTML = '💮 Mic access blocked. Tap the cake to blow out candles!';
                 }
             }
         }
@@ -1882,8 +1881,6 @@
                 `<br><span style="font-size:0.78rem;opacity:0.5;margin-top:0.4rem;display:inline-block;">Or just tap the cake to blow!</span>`;
         }
 
-
-
         function detectBlow() {
             if (allBlown) return;
             const buf = new Uint8Array(analyser.frequencyBinCount);
@@ -1892,7 +1889,6 @@
             let s = 0; for (let i = 0; i < bins; i++) s += buf[i];
             const avg = s / bins;
 
-            /* live mic bar */
             micFill.style.width = Math.min(100, (avg / 150) * 100) + '%';
 
             const elapsed = Date.now() - micStart;
@@ -1912,7 +1908,6 @@
             if (!f) return;
             f.classList.add('blown');
 
-            /* smoke puff */
             const sm = document.getElementById('sm' + blown);
             if (sm) { sm.classList.add('puff'); setTimeout(() => sm.classList.remove('puff'), 1300); }
 
@@ -2005,15 +2000,13 @@
             if (isSharing) return;
             isSharing = true;
             try {
-                // Fetch the image directly as a Blob — avoids canvas CORS taint issues entirely
-                const imgUrl = 'img/Birthday.png';
+                const imgUrl = 'img/special_birthday.png';
                 let blob;
                 try {
                     const res = await fetch(imgUrl, { cache: 'force-cache' });
                     if (!res.ok) throw new Error('HTTP ' + res.status);
                     blob = await res.blob();
                 } catch (fetchErr) {
-                    // fetch failed (e.g. file:// protocol) — fall back to canvas
                     blob = await new Promise((resolve, reject) => {
                         const img = new Image();
                         img.crossOrigin = 'anonymous';
@@ -2029,18 +2022,16 @@
                     });
                 }
 
-                // ── Mobile: native Web Share API (files) ──
                 const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
                 if (isMobile && navigator.share) {
                     try {
-                        const file = new File([blob], 'Birthday.png', { type: 'image/png' });
+                        const file = new File([blob], 'Special_Birthday.png', { type: 'image/png' });
                         const canShareFile = navigator.canShare && navigator.canShare({ files: [file] });
                         if (canShareFile) {
                             await navigator.share({ files: [file] });
-                            return; // ✅ Done — do NOT run download code
+                            return;
                         }
                     } catch (shareErr) {
-                        // User cancelled or share failed — don't fall through to download on mobile
                         if (shareErr.name !== 'AbortError') {
                             console.warn('Native share failed:', shareErr);
                         }
@@ -2048,11 +2039,10 @@
                     }
                 }
 
-                // ── Desktop/PC: clean anchor download via object URL ──
                 const objectUrl = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = objectUrl;
-                link.download = 'Birthday.png';
+                link.download = 'Special_Birthday.png';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -2071,7 +2061,7 @@
         /* ═══════════════════ SECURITY ═══════════════════ */
         document.addEventListener('contextmenu', e => {
             e.preventDefault();
-            alert("🍂 This is a special surprise — no peeking! 😒");
+            alert("💮 This is a special surprise — no peeking! 😒");
         });
     </script>
 </body>

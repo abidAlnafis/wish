@@ -1233,6 +1233,226 @@
             outline: none;
             -webkit-tap-highlight-color: transparent;
         }
+
+        /* ══════════════════════════════════════
+           SCREEN Q / Y / N — QUESTION FLOW
+        ══════════════════════════════════════ */
+        .qyn-screen {
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(1rem, 3vh, 1.6rem);
+            animation: fadeUp .55s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .qyn-screen.active {
+            display: flex;
+        }
+
+        .qyn-img-wrap {
+            width: clamp(500px, 100vw, 600px);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+            animation: qynFloat 4s ease-in-out infinite alternate;
+            position: relative;
+        }
+
+        .qyn-img-wrap img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 24px;
+        }
+
+        @keyframes qynFloat {
+            from {
+                transform: translateY(4px) scale(1);
+            }
+
+            to {
+                transform: translateY(-6px) scale(1.01);
+            }
+        }
+
+        /* ── Question screen specific ── */
+        #s-question .qyn-img-wrap {
+            box-shadow: 0 12px 48px rgba(173, 216, 230, 0.35), 0 0 60px rgba(173, 216, 230, 0.15);
+        }
+
+        .q-btn-row {
+            display: flex;
+            gap: clamp(0.8rem, 3vw, 1.2rem);
+            width: 100%;
+            justify-content: center;
+        }
+
+        .q-btn {
+            flex: 1;
+            max-width: 180px;
+            padding: clamp(0.8rem, 2.5vw, 1.1rem) 1.4rem;
+            border: none;
+            border-radius: 100px;
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(1rem, 4vw, 1.15rem);
+            font-weight: 800;
+            cursor: pointer;
+            transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .q-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transform: skewX(-20deg);
+            animation: btnShine 3.5s infinite;
+        }
+
+        .q-btn-yes {
+            background: linear-gradient(135deg, #5dba72, #7dd98c);
+            color: #0a2e14;
+            box-shadow: 0 6px 24px rgba(93, 186, 114, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .q-btn-yes:hover {
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 12px 32px rgba(93, 186, 114, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .q-btn-yes:active {
+            transform: translateY(1px) scale(.97);
+        }
+
+        .q-btn-no {
+            background: linear-gradient(135deg, #e87878, #f5a0a0);
+            color: #3a0a0a;
+            box-shadow: 0 6px 24px rgba(232, 120, 120, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .q-btn-no:hover {
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 12px 32px rgba(232, 120, 120, 0.55), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .q-btn-no:active {
+            transform: translateY(1px) scale(.97);
+        }
+
+        .q-label {
+            font-family: 'Caveat', cursive;
+            font-size: clamp(1rem, 3.5vw, 1.25rem);
+            color: rgba(240, 230, 211, 0.7);
+            text-align: center;
+        }
+
+        /* ── Yes screen ── */
+        #s-yes .qyn-img-wrap {
+            box-shadow: 0 12px 48px rgba(245, 197, 66, 0.3), 0 0 60px rgba(93, 186, 114, 0.15);
+        }
+
+        .yes-text {
+            font-family: 'Caveat', cursive;
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
+            font-weight: 700;
+            color: var(--gold);
+            text-shadow: 0 0 22px rgba(245, 197, 66, 0.35);
+            text-align: center;
+        }
+
+        /* ── No screen ── */
+        #s-no .qyn-img-wrap {
+            box-shadow: 0 12px 48px rgba(232, 120, 120, 0.3), 0 0 60px rgba(245, 160, 160, 0.15);
+            animation: qynShake 0.5s ease-in-out, qynFloat 4s ease-in-out infinite alternate 0.5s;
+        }
+
+        .no-text {
+            font-family: 'Caveat', cursive;
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
+            font-weight: 700;
+            color: #f5a0a0;
+            text-shadow: 0 0 22px rgba(245, 160, 160, 0.35);
+            text-align: center;
+        }
+
+        @keyframes qynShake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-8px) rotate(-2deg);
+            }
+
+            40% {
+                transform: translateX(8px) rotate(2deg);
+            }
+
+            60% {
+                transform: translateX(-5px) rotate(-1deg);
+            }
+
+            80% {
+                transform: translateX(5px) rotate(1deg);
+            }
+        }
+
+        /* Counting dots animation */
+        .dots-anim::after {
+            content: '';
+            animation: dotsAnim 1.5s steps(3, end) infinite;
+        }
+
+        @keyframes dotsAnim {
+            0% {
+                content: '';
+            }
+
+            33% {
+                content: '.';
+            }
+
+            66% {
+                content: '..';
+            }
+
+            100% {
+                content: '...';
+            }
+        }
+
+        /* Subtle particle glow on Q screens */
+        .qyn-glow {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(40px);
+            opacity: 0.3;
+            animation: qynGlowPulse 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes qynGlowPulse {
+            from {
+                opacity: 0.15;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 0.35;
+                transform: scale(1.1);
+            }
+        }
     </style>
 </head>
 
@@ -1445,7 +1665,7 @@
     <div id="main-card">
 
         <!-- ─── SCREEN 1: ENVELOPE ─── -->
-        <div id="s-env" class="screen active">
+        <div id="s-env" class="screen">
             <div class="glass">
                 <p class="tagline">Psst… something arrived for you 🤔</p>
                 <h2 class="env-heading">A little birthday surprise<br>is waiting inside…</h2>
@@ -1544,6 +1764,40 @@
             </div>
 
             <button class="cta-btn" id="open-btn">Open Your Letter 🍂</button>
+        </div>
+
+        <!-- ─── SCREEN Q: QUESTION ─── -->
+        <div id="s-question" class="qyn-screen active">
+            <div class="qyn-glow" style="width:200px;height:200px;background:#add8e6;top:-30px;left:-40px;"></div>
+            <div class="qyn-glow" style="width:150px;height:150px;background:#87ceeb;bottom:-20px;right:-30px;"></div>
+            <div class="qyn-img-wrap">
+                <img src="img/question.png" alt="Do you really wanna see?" draggable="false">
+            </div>
+            <p class="q-label">So… what do you say? 🤔</p>
+            <div class="q-btn-row">
+                <button class="q-btn q-btn-yes" id="q-yes-btn">Yes! 💚</button>
+                <button class="q-btn q-btn-no" id="q-no-btn">No 😶</button>
+            </div>
+        </div>
+
+        <!-- ─── SCREEN Y: YES RESPONSE ─── -->
+        <div id="s-yes" class="qyn-screen">
+            <div class="qyn-glow" style="width:180px;height:180px;background:#f5c54a;top:-20px;right:-30px;"></div>
+            <div class="qyn-glow" style="width:160px;height:160px;background:#5dba72;bottom:-30px;left:-20px;"></div>
+            <div class="qyn-img-wrap">
+                <img src="img/yes.png" alt="Awww" draggable="false">
+            </div>
+            <p class="yes-text">Awww… here it comes! 🌟</p>
+        </div>
+
+        <!-- ─── SCREEN N: NO RESPONSE ─── -->
+        <div id="s-no" class="qyn-screen">
+            <div class="qyn-glow" style="width:200px;height:200px;background:#f5a0a0;top:-30px;left:-20px;"></div>
+            <div class="qyn-glow" style="width:150px;height:150px;background:#e87878;bottom:-20px;right:-30px;"></div>
+            <div class="qyn-img-wrap">
+                <img src="img/no (1).png" alt="You have to see it!" draggable="false">
+            </div>
+            <p class="no-text">Too bad… you're seeing it anyway! 😤</p>
         </div>
 
         <!-- ─── SCREEN 2: MAKE A WISH ─── -->
@@ -1748,6 +2002,7 @@
         /* ═══════════════════ SCREEN SWITCH ═══════════════════ */
         function show(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.qyn-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
@@ -1807,11 +2062,21 @@
                 audioCtx.resume();
             }
 
-            setTimeout(() => { show('s-wish'); initMic(); }, 1800);
+            setTimeout(() => { show('s-question'); }, 1800);
         }
         openBtn.addEventListener('click', openEnvelope);
         envWrap.addEventListener('click', openEnvelope);
         envWrap.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openEnvelope(); });
+
+        /* ═══════════════════ QUESTION FLOW (Q → Y/N → WISH) ═══════════════════ */
+        document.getElementById('q-yes-btn').addEventListener('click', () => {
+            show('s-yes');
+            setTimeout(() => { show('s-env'); }, 3000);
+        });
+        document.getElementById('q-no-btn').addEventListener('click', () => {
+            show('s-no');
+            setTimeout(() => { show('s-env'); }, 3000);
+        });
 
         /* ═══════════════════ MIC / BLOW DETECTION ═══════════════════ */
         let audioCtx, analyser, micStream, animId;

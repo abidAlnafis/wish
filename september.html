@@ -11,9 +11,9 @@
     <link rel="preload"
         href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Nunito:ital,wght@0,400..800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap"
         as="style">
-    <link rel="preload" href="img/question.png" as="image">
-    <link rel="preload" href="img/yes.png" as="image">
-    <link rel="preload" href="img/no (1).png" as="image">
+    <link rel="preload" href="img/question.png" as="image" fetchpriority="high">
+    <link rel="preload" href="img/yes.png" as="image" fetchpriority="high">
+    <link rel="preload" href="img/no%20(1).png" as="image" fetchpriority="high">
     <!-- Standard Meta -->
     <meta name="description" content="A special birthday surprise is waiting for you! 🎁">
 
@@ -1242,8 +1242,8 @@
            NEW SCREENS: QUESTION / YES / NO
         ══════════════════════════════════════ */
         .new-screen-img {
-            width: clamp(240px, 85vw, 400px);
-            max-width: 100%;
+            width: clamp(312px, 110vw, 520px);
+            max-width: none;
             height: auto;
             border: none;
             border-radius: 0;
@@ -1863,6 +1863,17 @@
     <div class="footer">Developed with ❤️ By Nafis</div>
 
     <script>
+        /* ═══════════════════ EAGER IMAGE PRELOADER ═══════════════════ */
+        (function () {
+            const srcs = ['img/question.png', 'img/yes.png', 'img/no (1).png'];
+            srcs.forEach(src => {
+                const img = new Image();
+                img.src = src;
+                // decode() forces the browser to fully fetch + decode the image into memory
+                if (img.decode) img.decode().catch(() => {});
+            });
+        })();
+
         /* ═══════════════════ STARS ═══════════════════ */
         (function () {
             const sf = document.getElementById('starfield');

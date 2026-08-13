@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Happy Birthday✨</title>
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -68,6 +68,7 @@
         body {
             height: 100%;
             width: 100%;
+            overflow-x: hidden;
         }
 
         body {
@@ -1241,7 +1242,8 @@
            NEW SCREENS: QUESTION / YES / NO
         ══════════════════════════════════════ */
         .new-screen-img {
-            width: clamp(360px, 110vw, 520px);
+            width: clamp(240px, 85vw, 400px);
+            max-width: 100%;
             height: auto;
             border: none;
             border-radius: 0;

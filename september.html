@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Happy Birthday✨</title>
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -1306,8 +1307,15 @@
         }
 
         @keyframes btnCutePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.04); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.04);
+            }
         }
 
         .qn-btn::after {
@@ -1833,13 +1841,13 @@
 
             <div class="msg-bubble new-msg">
                 <p class="dear-text">Dear Afia,</p>
-                <p class="bn-text">Stay as bright and colorful as a beautiful sky,<br>and may every dream of your life
-                    come true. 🌟</p>
+                <p class="bn-text">We met when we were not even looking for each other & now you have become my
+                    everything.</p>
+                <p class="bn-text">I can’t even imagine a single day without <br>your texts. 🥹</p>
                 <p class="bn-text">I know you're going to be an amazing doctor, and may you
-                    touch many lives with your kindness. 🩺</p>
-                <p class="bn-text">Wherever you go, may joy and love always stay<br>with you. <span
-                        class="inline-leaf">🍂</span></p>
-                <p class="bn-text">May Allah protect you from everything,,,😊</p>
+                    touch many lives with your kindness,,,🩺</p>
+                <p class="bn-text">With me or without me,<br>
+                    I hope the universe will take care of you, no matter what,,,😊</p>
                 <p class="with-love">– Nafis</p>
 
                 <!-- Tiny decorations on card edges -->
@@ -1870,7 +1878,7 @@
                 const img = new Image();
                 img.src = src;
                 // decode() forces the browser to fully fetch + decode the image into memory
-                if (img.decode) img.decode().catch(() => {});
+                if (img.decode) img.decode().catch(() => { });
             });
         })();
 
